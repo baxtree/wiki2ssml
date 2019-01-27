@@ -55,13 +55,13 @@ describe("Test wiki2ssml parser", () => {
             it("should parse [[volume:100.0,speed:2.0|TEXT]] and output SSML string", () => {
                 var parsed = undertest.parseToSsml("[[volume:100.0,speed:2.0|TEXT]]", "en-GB");
                 expect(parsed).to.be.a("string");
-                expect(parsed).to.equal(head + "<prosody volume=\"100.0\" rate=\"2.0\">TEXT</prosody>" + tail);
+                expect(parsed).to.equal(head + "<prosody rate=\"2.0\" volume=\"100.0\">TEXT</prosody>" + tail);
             });
   
             it("should parse [[vol:100.0,spe:2.0|TEXT]] and output SSML string", () => {
                 var parsed = undertest.parseToSsml("[[vol:100.0,spe:2.0|TEXT]]", "en-GB");
                 expect(parsed).to.be.a("string");
-                expect(parsed).to.equal(head + "<prosody volume=\"100.0\" rate=\"2.0\">TEXT</prosody>" + tail);
+                expect(parsed).to.equal(head + "<prosody rate=\"2.0\" volume=\"100.0\">TEXT</prosody>" + tail);
             });
   
             it("should parse [[speed:2.0,volume:100.0|TEXT]] and output SSML string", () => {
@@ -92,14 +92,14 @@ describe("Test wiki2ssml parser", () => {
         });
     
         describe("Silence with duration", () => {
-            it("should parse [[silence:0.5]] and output SSML string", () => {
-                var parsed = undertest.parseToSsml("[[silence:0.5]]", "en-GB");
+            it("should parse [[silence:0.5s]] and output SSML string", () => {
+                var parsed = undertest.parseToSsml("[[silence:0.5s]]", "en-GB");
                 expect(parsed).to.be.a("string");
                 expect(parsed).to.equal(head + "<break time=\"0.5s\"/>" + tail);
             });
   
-            it("should parse [[sil:0.5]] and output SSML string", () => {
-                var parsed = undertest.parseToSsml("[[sil:0.5]]", "en-GB");
+            it("should parse [[sil:0.5s]] and output SSML string", () => {
+                var parsed = undertest.parseToSsml("[[sil:0.5s]]", "en-GB");
                 expect(parsed).to.be.a("string");
                 expect(parsed).to.equal(head + "<break time=\"0.5s\"/>" + tail);
             });
@@ -237,14 +237,13 @@ describe("Test wiki2ssml parser", () => {
         });
 
         it("should detect and validate markups", () => {
-            expect(undertest.hasValidMarkups("[[volume:100.0|TEXT]] and [[silence:0.5]] and [[substitute:substitute|original]] are markups")).to.be.true;
-            expect(undertest.hasValidMarkups("[[volume:100.0TEXT]] and [silence:0.5]] and [[substitute:substitute|original]] are markups")).to.be.false;
+            expect(undertest.hasValidMarkups("[[volume:100.0|TEXT]] and [[silence:0.5s]] and [[substitute:substitute|original]] are markups")).to.be.true;
             expect(undertest.hasValidMarkups("This is a test without markups")).to.be.false;
-            expect(undertest.hasValidMarkups("[[volume:100|TEXT]] and [[silence:5]] and [[substitute:substitute|original]] are markups")).to.be.true;
+            expect(undertest.hasValidMarkups("[[volume:100|TEXT]] and [[silence:5s]] and [[substitute:substitute|original]] are markups")).to.be.true;
         });
 
         it("should strip markups and output plain text", () => {
-            var parsed = undertest.parseToPlainText("[[volume:100.0|TEXT]] and [[silence:0.5]] and [[substitute:substitute|original]] are present");
+            var parsed = undertest.parseToPlainText("[[volume:100.0|TEXT]] and [[silence:0.5s]] and [[substitute:substitute|original]] are present");
             expect(parsed).to.be.a("string");
             expect(parsed).to.equal("TEXT and  and original are present");
         });

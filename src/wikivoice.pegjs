@@ -7,19 +7,6 @@
         }
         return matches.join("");
     }
-
-    function toDecimal(matches) {
-        var result = "";
-        for (var i = 0; i < matches.length; i++) {
-            if (typeof matches[i] === "string") {
-                result += matches[i];
-            }
-            else {
-                result += matches[i].join("");
-            }
-        }
-        return result;
-    }
     /* eslint-disable */
 }
 BEGIN
@@ -55,20 +42,30 @@ Statement
     / PartOfSpeech
 
 Prosody
-  = VolumeSpeed / SpeedVolume
+  = VolumeSpeed / SpeedVolume / Volume / Speed
+
+Volume
+  = "[[" ("volume"i / "vol"i) ":" volume:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody volume="' + toString(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+Speed
+  = "[[" ("speed"i / "spe"i) ":" speed:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toString(speed) + '">' + toString(text) + '</prosody>';
+    }
 
 VolumeSpeed
-  = "[[" volume:Volume ","? speed:Speed? "|" text:(!"]]" .)+ "]]"
+  = "[[" ("volume"i / "vol"i) ":" volume:(!"," .)+ "," ("speed"i / "spe"i) ":" speed:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
     {
-      speed = speed ? " " + speed : "";
-      return '<prosody ' + volume + speed + '>' + toString(text) + '</prosody>';
+      return '<prosody rate="' + toString(speed) + '" ' + 'volume="' + toString(volume) + '">' + toString(text) + '</prosody>';
     }
 
 SpeedVolume
-  = "[[" speed:Speed ","? volume:Volume? "|" text:(!"]]" .)+ "]]"
+  = "[[" ("speed"i / "spe"i) ":" speed:(!"," .)+ "," ("volume"i / "vol"i) ":" volume:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
     {
-      volume = volume ? " " + volume : "";
-      return '<prosody ' + speed + volume  + '>' + toString(text) + '</prosody>';
+      return '<prosody rate="' + toString(speed) + '" ' + 'volume="' + toString(volume) + '">' + toString(text) + '</prosody>';
     }
 
 Emphasis
@@ -78,9 +75,9 @@ Emphasis
     }
 
 Silence
-  = "[[" ("silence"i / "sil"i) ":" duration:Decimal "]]"
+  = "[[" ("silence"i / "sil"i) ":" duration:(!"]]" .)+ "]]"
     {
-      return '<break time="' + toDecimal(duration) + 's"/>';
+      return '<break time="' + toString(duration) + '"/>';
     }
 
 Substitute
@@ -133,18 +130,6 @@ PartOfSpeech
     {
       return '<w role="' + toString(role) + '">' + toString(text) + "</w>"
     }
-  
-Volume
-  = ("volume"i / "vol"i) ":" volume:Decimal
-    {
-      return 'volume="' + toDecimal(volume) + '"';
-    }
-
-Speed
-  = ("speed"i / "spe"i) ":" speed:Decimal
-    {
-      return 'rate="' + toDecimal(speed) + '"';
-    }
 
 AlphabetPronunciation
   = "[[" ("alphabet"i / "alp"i) ":" alphabet:(!"," .)+ "," ("pronunciation"i / "pro"i) ":" pronunciation:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
@@ -157,9 +142,6 @@ PronunciationAlphabet
     {
       return '<phoneme alphabet="' + toString(alphabet) + '" ph="' + toString(pronunciation) + '">' + toString(text) + '</phoneme>';
     }
-
-Decimal
-  = [0-9]*[\.]*[0-9]*
 
 _ "whitespace"
   = [\t\n\r]*
