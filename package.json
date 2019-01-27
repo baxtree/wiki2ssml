@@ -1,0 +1,36 @@
+{
+  "name": "wiki2ssml",
+  "version": "0.1.0",
+  "description": "Lightweight Expressive Speech Synthesis Markup Language",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha ./test",
+    "lint": "./node_modules/eslint/bin/eslint.js ./src/wiki2ssml.js ./test/wiki2ssml-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baxtree/wiki2ssml.git"
+  },
+  "keywords": [
+    "SSML",
+    "markup",
+    "text-to-speech"
+  ],
+  "author": {
+    "name": "Xi Bai",
+    "email": "xi.bai.ed@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/baxtree/wiki2ssml/issues"
+  },
+  "homepage": "https://github.com/baxtree/wiki2ssml#readme",
+  "dependencies": {
+    "pegjs": "^0.10.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.12.1",
+    "mocha": "^5.2.0"
+  }
+}
