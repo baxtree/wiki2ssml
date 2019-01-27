@@ -1,7 +1,7 @@
 {
   "name": "wiki2ssml",
-  "version": "0.1.0",
-  "description": "Lightweight Expressive Speech Synthesis Markup Language",
+  "version": "0.1.1",
+  "description": "Wiki2SSML provides the WikiVoice markup language used for fine-tuning synthesised voice.",
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
@@ -13,9 +13,11 @@
     "url": "git+https://github.com/baxtree/wiki2ssml.git"
   },
   "keywords": [
-    "SSML",
-    "markup",
-    "text-to-speech"
+    "ssml",
+    "markup language",
+    "text-to-speech",
+    "voice tuning",
+    "wikitext"
   ],
   "author": {
     "name": "Xi Bai",
