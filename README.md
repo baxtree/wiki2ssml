@@ -44,6 +44,6 @@ try {
 will output:
 ```xml
 <speak version="1.1" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd" xml:lang="en-GB">
-    <prosody volume="50" rate="0.5">Speak this with volume increased by 2dB at half the default speech rate.</prosody>
+    <prosody volume="+2dB" rate="50%">Speak this with the volume increased by 2dB at half the default speech rate.</prosody>
 </speak>
 ```
