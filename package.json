@@ -1,6 +1,6 @@
 {
   "name": "wiki2ssml",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Wiki2SSML provides the WikiVoice markup language used for fine-tuning synthesised voice.",
   "license": "Apache-2.0",
   "main": "index.js",
