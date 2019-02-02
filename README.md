@@ -19,23 +19,23 @@ $ yarn add wiki2ssml
 # Supported WikiVoice Markups
 | Expressions        | Operations|
 | ------------- |-------------|
-| `[[volume:SCALE|TEXT]]` | Speaking volume |
-| `[[speed:SCALE|TEXT]]` | Speaking rate |
-| `[[pitch:SCALE|TEXT]]` | Speaking pitch |
+| `[[volume:SCALE\|TEXT]]` | Speaking volume |
+| `[[speed:SCALE\|TEXT]]` | Speaking rate |
+| `[[pitch:SCALE\|TEXT]]` | Speaking pitch |
 | `[[silence:TEXT]]` | Pause with duration |
 | `[[strength:TEXT]]` | Pause with strength |
-| `[[emphasis:LEVEL|TEXT]]` | Emphasis with LEVEL |
+| `[[emphasis:LEVEL\|TEXT]]` | Emphasis with LEVEL |
 | `[[audio:AUDIO_URI]]` | Audio embedded into speech|
-| `[[lang:LANGUAGE|TEXT]]` | Language indicator |
-| `[[paragraph|TEXT]]` | Paragraph indicator |
-| `[[sentence|TEXT]]` | Sentence indicator |
-| `[[type:TYPE|TEXT]]` | Type it should be said as |
-| `[[voice:NAME|TEXT]]` | Voice name it should be said with |
-| `[[pos:POS|TEXT]]` | Part of speech it should be prounouced as |
-| `[[substitute:TEXT1|TEXT2]]` | Replace TEXT2 with TEXT1 as substitution |
-| `[[alphabet:ALP,pronunciation:PRO|TEXT]]` | Phonetic pronunciation |
-| `[[volume:SCALE,speed:SCALE,pitch:SCALE|TEXT]]` | Speaking volume, rate and pitch |
-| `[[type:TYPE,format:FORMAT,detail:DETAIL|TEXT]]` | Type it should be said as |
+| `[[lang:LANGUAGE\|TEXT]]` | Language indicator |
+| `[[paragraph\|TEXT]]` | Paragraph indicator |
+| `[[sentence\|TEXT]]` | Sentence indicator |
+| `[[type:TYPE\|TEXT]]` | Type it should be said as |
+| `[[voice:NAME\|TEXT]]` | Voice name it should be said with |
+| `[[pos:POS\|TEXT]]` | Part of speech it should be prounouced as |
+| `[[substitute:TEXT1\|TEXT2]]` | Replace TEXT2 with TEXT1 as substitution |
+| `[[alphabet:ALP,pronunciation:PRO\|TEXT]]` | Phonetic pronunciation |
+| `[[volume:SCALE,speed:SCALE,pitch:SCALE\|TEXT]]` | Speaking volume, rate and pitch |
+| `[[type:TYPE,format:FORMAT,detail:DETAIL\|TEXT]]` | Type it should be said as |
 
 More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/).
 
