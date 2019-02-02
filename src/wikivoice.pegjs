@@ -7,6 +7,27 @@
         }
         return matches.join("");
     }
+
+    function toDuration(matches) {
+        var integral =  matches[0].join("");
+        var decimal = matches[1] == undefined ? "" : matches[1][0] + matches[1][1].join("")
+        var unit = matches[2];
+        return integral + decimal + unit;
+    }
+
+    function toVolume(matches) {
+        if (matches[matches.length - 1] === "dB") {
+            return matches[0].join("") + "dB";
+        }
+        return matches;
+    }
+
+    function toRelativeOrPercentage(matches) {
+        if (matches[matches.length - 1] === "%") {
+            return matches[0].join("") + "%";
+        }
+        return matches;
+    }
     /* eslint-disable */
 }
 BEGIN
@@ -42,42 +63,131 @@ Statement
     / PartOfSpeech
 
 Prosody
-  = VolumeSpeed / SpeedVolume / Volume / Speed
+  = SpeedPitchVolume / SpeedVolumePitch / PitchSpeedVolume / PitchVolumeSpeed / VolumeSpeedPitch / VolumePitchSpeed
+    / SpeedPitch / SpeedVolume / PitchSpeed / PitchVolume / VolumeSpeed / VolumePitch
+    / Speed / Pitch / Volume
 
-Volume
-  = "[[" ("volume"i / "vol"i) ":" volume:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+SpeedPitchVolume
+  = "[[" ("speed"i / "spe"i) ":" speed:RATE "," ("pitch"i / "pit"i) ":" pitch:PITCH "," ("volume"i / "vol"i) ":" volume:VOLUME "|" text:(!"]]" .)+ "]]"
     {
-      return '<prosody volume="' + toString(volume) + '">' + toString(text) + '</prosody>';
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
     }
 
-Speed
-  = "[[" ("speed"i / "spe"i) ":" speed:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+SpeedVolumePitch
+  = "[[" ("speed"i / "spe"i) ":" speed:RATE "," ("volume"i / "vol"i) ":" volume:VOLUME "," ("pitch"i / "pit"i) ":" pitch:PITCH "|" text:(!"]]" .)+ "]]"
     {
-      return '<prosody rate="' + toString(speed) + '">' + toString(text) + '</prosody>';
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
     }
 
-VolumeSpeed
-  = "[[" ("volume"i / "vol"i) ":" volume:(!"," .)+ "," ("speed"i / "spe"i) ":" speed:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+PitchSpeedVolume
+  = "[[" ("pitch"i / "pit"i) ":" pitch:PITCH "," ("speed"i / "spe"i) ":" speed:RATE "," ("volume"i / "vol"i) ":" volume:VOLUME "|" text:(!"]]" .)+ "]]"
     {
-      return '<prosody rate="' + toString(speed) + '" ' + 'volume="' + toString(volume) + '">' + toString(text) + '</prosody>';
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+PitchVolumeSpeed
+  = "[[" ("pitch"i / "pit"i) ":" pitch:PITCH+ "," ("volume"i / "vol"i) ":" volume:VOLUME "," ("speed"i / "spe"i) ":" speed:RATE "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+VolumeSpeedPitch
+  = "[[" ("volume"i / "vol"i) ":" volume:VOLUME "," ("speed"i / "spe"i) ":" speed:RATE "," ("pitch"i / "pit"i) ":" pitch:PITCH "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+VolumePitchSpeed
+  = "[[" ("volume"i / "vol"i) ":" volume:VOLUME "," ("pitch"i / "pit"i) ":" pitch:PITCH "," ("speed"i / "spe"i) ":" speed:RATE "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+SpeedPitch
+  = "[[" ("speed"i / "spe"i) ":" speed:RATE "," ("pitch"i / "pit"i) ":" pitch:PITCH "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '">' + toString(text) + '</prosody>';
     }
 
 SpeedVolume
-  = "[[" ("speed"i / "spe"i) ":" speed:(!"," .)+ "," ("volume"i / "vol"i) ":" volume:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = "[[" ("speed"i / "spe"i) ":" speed:RATE "," ("volume"i / "vol"i) ":" volume:VOLUME "|" text:(!"]]" .)+ "]]"
     {
-      return '<prosody rate="' + toString(speed) + '" ' + 'volume="' + toString(volume) + '">' + toString(text) + '</prosody>';
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+PitchSpeed
+  = "[[" ("pitch"i / "pit"i) ":" pitch:PITCH "," ("speed"i / "spe"i) ":" speed:RATE "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'pitch="' + toRelativeOrPercentage(pitch) + '">' + toString(text) + '</prosody>';
+    }
+
+PitchVolume
+  = "[[" ("pitch"i / "pit"i) ":" pitch:PITCH "," ("volume"i / "vol"i) ":" volume:VOLUME "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+VolumeSpeed
+  = "[[" ("volume"i / "vol"i) ":" volume:VOLUME "," ("speed"i / "spe"i) ":" speed:RATE "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+VolumePitch
+  = "[[" ("volume"i / "vol"i) ":" volume:VOLUME "," ("pitch"i / "pit"i) ":" pitch:PITCH "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody pitch="' + toRelativeOrPercentage(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
+    }
+
+Speed
+  = "[[" ("speed"i / "spe"i) ":" speed:RATE "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody rate="' + toRelativeOrPercentage(speed) + '">' + toString(text) + '</prosody>';
+    }
+
+Pitch
+  = "[[" ("pitch"i / "pit"i) ":" pitch:PITCH "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody pitch="' + toRelativeOrPercentage(pitch) + '">' + toString(text) + '</prosody>';
+    }
+
+Volume
+  = "[[" ("volume"i / "vol"i) ":" volume:VOLUME "|" text:(!"]]" .)+ "]]"
+    {
+      return '<prosody volume="' + toVolume(volume) + '">' + toString(text) + '</prosody>';
     }
 
 Emphasis
-  = "[[" ("emphasis"i / "emp"i) ":" level:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = "[[" ("emphasis"i / "emp"i) ":" level:LEVEL "|" text:(!"]]" .)+ "]]"
     {
-      return '<emphasis level="' + toString(level) + '">' + toString(text) + '</emphasis>';
+      return '<emphasis level="' + level + '">' + toString(text) + '</emphasis>';
     }
 
 Silence
-  = "[[" ("silence"i / "sil"i) ":" duration:(!"]]" .)+ "]]"
+  = TimeStrength / StrengthTime / Time / Strength
+
+TimeStrength
+  = "[[" ("silence"i / "sil"i) ":" time:DURATION "," ("strength"i / "str"i) ":" strength:STRENTH "]]"
     {
-      return '<break time="' + toString(duration) + '"/>';
+      return '<break strength="' + strength + '" time="' + toDuration(time) + '"/>';
+    }
+
+StrengthTime
+  = "[[" ("strength"i / "str"i) ":" strength:STRENTH "," ("silence"i / "sil"i) ":" time:DURATION "]]"
+    {
+      return '<break strength="' + strength + '" time="' + toDuration(time) + '"/>';
+    }
+
+Time
+  = "[[" ("silence"i / "sil"i) ":" time:DURATION "]]"
+    {
+      return '<break time="' + toDuration(time) + '"/>';
+    }
+
+Strength
+  = "[[" ("strength"i / "str"i) ":" strength:STRENTH "]]"
+    {
+      return '<break strength="' + strength + '"/>';
     }
 
 Substitute
@@ -110,13 +220,62 @@ Sentence
       return '<s>' + toString(text) + '</s>'
     }
 
-Phoneme
-  = AlphabetPronunciation / PronunciationAlphabet
-
 Type
-  = "[[" ("type"i / "typ"i) ":" interpret:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = InterpretFormatDetail / InterpretDetailFormat / FormatInterpretDetail / FormatDetailInterpret / DetailFormatInterpret / DetailInterpretFormat
+    / InterpretFormat / FormatInterpret / Interpret
+
+InterpretFormatDetail
+  = "[[" ("type"i / "typ"i) ":" interpret:INTERPRET "," ("format"i / "for"i) ":" format:FORMAT "," ("detail"i / "det"i) ":" detail:DETAIL "|" text:(!"]]" .)+ "]]"
     {
-      return '<say-as interpret-as="' + toString(interpret) + '">' + toString(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + detail + '">' + toString(text) + '</say-as>';
+    }
+
+InterpretDetailFormat
+  = "[[" ("type"i / "typ"i) ":" interpret:INTERPRET "," ("detail"i / "det"i) ":" detail:DETAIL "," ("format"i / "for"i) ":" format:FORMAT "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + detail + '">' + toString(text) + '</say-as>';
+    }
+
+FormatInterpretDetail
+  = "[[" ("format"i / "for"i) ":" format:FORMAT "," ("type"i / "typ"i) ":" interpret:INTERPRET "," ("detail"i / "det"i) ":" detail:DETAIL "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + detail + '">' + toString(text) + '</say-as>';
+    }
+
+FormatDetailInterpret
+  = "[["  ("format"i / "for"i) ":" format:FORMAT "," ("detail"i / "det"i) ":" detail:DETAIL "," ("type"i / "typ"i) ":" interpret:INTERPRET "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + detail + '">' + toString(text) + '</say-as>';
+    }
+
+DetailFormatInterpret
+  = "[[" ("detail"i / "det"i) ":" detail:DETAIL "," ("format"i / "for"i) ":" format:FORMAT "," ("type"i / "typ"i) ":" interpret:INTERPRET "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + detail + '">' + toString(text) + '</say-as>';
+    }
+
+DetailInterpretFormat
+  = "[["  ("detail"i / "det"i) ":" detail:DETAIL "," ("type"i / "typ"i) ":" interpret:INTERPRET "," ("format"i / "for"i) ":" format:FORMAT "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + detail + '">' + toString(text) + '</say-as>';
+    }
+
+FormatInterpret
+  = "[[" ("format"i / "for"i) ":" format:FORMAT "," ("type"i / "typ"i) ":" interpret:INTERPRET "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '">' + toString(text) + '</say-as>';
+    }
+
+InterpretFormat
+  = "[[" ("type"i / "typ"i) ":" interpret:INTERPRET "," ("format"i / "for"i) ":" format:FORMAT "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '">' + toString(text) + '</say-as>';
+    }
+
+Interpret
+  = "[[" ("type"i / "typ"i) ":" interpret:INTERPRET "|" text:(!"]]" .)+ "]]"
+    {
+      return '<say-as interpret-as="' + interpret + '">' + toString(text) + '</say-as>';
     }
 
 Voice
@@ -131,6 +290,9 @@ PartOfSpeech
       return '<w role="' + toString(role) + '">' + toString(text) + "</w>"
     }
 
+Phoneme
+  = AlphabetPronunciation / PronunciationAlphabet / Pronunciation
+
 AlphabetPronunciation
   = "[[" ("alphabet"i / "alp"i) ":" alphabet:(!"," .)+ "," ("pronunciation"i / "pro"i) ":" pronunciation:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
     {
@@ -143,5 +305,38 @@ PronunciationAlphabet
       return '<phoneme alphabet="' + toString(alphabet) + '" ph="' + toString(pronunciation) + '">' + toString(text) + '</phoneme>';
     }
 
+Pronunciation
+  = "[[" ("pronunciation"i / "pro"i) ":" pronunciation:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+    {
+      return '<phoneme ph="' + toString(pronunciation) + '">' + toString(text) + '</phoneme>';
+    }
+
 _ "whitespace"
   = [\t\n\r]*
+
+STRENTH
+  = "none" / "x-weak" / "weak" / "medium" / "strong" / "x-strong"
+
+LEVEL
+  = "strong" / "moderate" / "none" / "reduced"
+
+DURATION
+  = [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+
+RATE
+  = "x-slow" / "slow" / "medium" / "fast" / "x-fast" / "default" / [\+0-9]+"%"
+
+PITCH
+  = "x-low" / "low" / "medium" / "high" / "x-high" / "default" / [\+\-0-9]+"%"
+
+VOLUME
+  = "silent" / "x-soft" / "soft" / "medium" / "loud" / "x-loud" / "default" / [\+\-0-9]+(.[0-9])*"dB"
+
+INTERPRET
+  = "cardinal" / "number" / "ordinal" / "characters" / "digits" / "fraction" / "expletive" / "bleep" / "interjection" / "unit" / "verbatim" / "spell-out" / "date" / "time" / "telephone" / "address"
+
+FORMAT
+  = "hms24" / "hms12" / "mdy" / "dmy" / "ymd" / "md" / "dm" / "ym" / "my" / "d" / "m" / "y"
+
+DETAIL
+  = [0-9]+
