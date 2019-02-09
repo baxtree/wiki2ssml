@@ -19,35 +19,35 @@ $ yarn add wiki2ssml
 # Supported WikiVoice Markups
 | Expressions        | Operations|
 | ------------- |-------------|
-| `[[volume:SCALE\|TEXT]]` | Speaking volume |
-| `[[speed:SCALE\|TEXT]]` | Speaking rate |
-| `[[pitch:SCALE\|TEXT]]` | Speaking pitch |
-| `[[silence:DURATION,strength:STRENGTH]]` | Pause with duration and strength |
-| `[[emphasis:LEVEL\|TEXT]]` | Emphasis with LEVEL |
-| `[[audio:AUDIO_URI]]` | Audio embedded into speech|
-| `[[lang:LANGUAGE\|TEXT]]` | Language indicator |
-| `[[paragraph\|TEXT]]` | Paragraph indicator |
-| `[[sentence\|TEXT]]` | Sentence indicator |
-| `[[type:TYPE\|TEXT]]` | Type it should be said as |
-| `[[voice:NAME\|TEXT]]` | Voice name it should be said with |
-| `[[pos:POS\|TEXT]]` | Part of speech it should be prounouced as |
-| `[[substitute:TEXT1\|TEXT2]]` | Replace TEXT2 with TEXT1 as substitution |
-| `[[alphabet:ALPHABET,pronunciation:PRONUNCIATION\|TEXT]]` | Phonetic pronunciation |
-| `[[volume:SCALE,speed:SCALE,pitch:SCALE\|TEXT]]` | Speaking volume, rate and pitch |
-| `[[type:TYPE,format:FORMAT,detail:DETAIL\|TEXT]]` | Type it should be said as |
-| `[[mark:NAME\|TEXT]]` | Mark referencing a location |
+| [[volume:SCALE&#124;TEXT]] | Speaking volume |
+| [[speed:SCALE&#124;TEXT]] | Speaking rate |
+| [[pitch:SCALE&#124;TEXT]] | Speaking pitch |
+| [[silence:DURATION,strength:STRENGTH]] | Pause with duration and strength |
+| [[emphasis:LEVEL&#124;TEXT]] | Emphasis with LEVEL |
+| [[audio:AUDIO_URI]] | Audio embedded into speech|
+| [[lang:LANGUAGE&#124;TEXT]] | Language indicator |
+| [[paragraph&#124;TEXT]] | Paragraph indicator |
+| [[sentence&#124;TEXT]] | Sentence indicator |
+| [[type:TYPE&#124;TEXT]] | Type it should be said as |
+| [[voice:NAME&#124;TEXT]] | Voice name it should be said with |
+| [[pos:POS&#124;TEXT]] | Part of speech it should be prounouced as |
+| [[substitute:TEXT1&#124;TEXT2]] | Replace TEXT2 with TEXT1 as substitution |
+| [[alphabet:ALPHABET,pronunciation:PRONUNCIATION&#124;TEXT]] | Phonetic pronunciation |
+| [[volume:SCALE,speed:SCALE,pitch:SCALE&#124;TEXT]] | Speaking volume, rate and pitch |
+| [[type:TYPE,format:FORMAT,detail:DETAIL&#124;TEXT]] | Type it should be said as |
+| [[mark:NAME&#124;TEXT]] | Mark referencing a location |
 
 # Supported Vendor-Specific Markups
 | Expressions        | Operations|
 | ------------- |-------------|
-| `[[amzWhispered\|TEXT]]` | Whispering |
-| `[[amzPhonation:soft\|TEXT]]` | Speaking Softly |
-| `[[amzTimbre:SCALE\|TEXT]]` | Controlling Timbre |
-| `[[amzDRC\|TEXT]]` | Dynamic Range Compression |
-| `[[amzBreathDuration:SCALE,amzBreathVolume:SCALE]]` | Breathing with duration and volume |
-| `[[amzDefaultBreath]]` | Default sound of breathing |
-| `[[ibmExprType:TYPE|TEXT]]` | Expressiveness type |
-| `[[ibmTransType:TYPE,ibmStrength:SCALE\|TEXT]]` | Voice transformation |
+| [[amzWhispered&#124;TEXT]] | Whispering |
+| [[amzPhonation:soft&#124;TEXT]] | Speaking Softly |
+| [[amzTimbre:SCALE&#124;TEXT]] | Controlling Timbre |
+| [[amzDRC&#124;TEXT]] | Dynamic Range Compression |
+| [[amzBreathDuration:SCALE,amzBreathVolume:SCALE]] | Breathing with duration and volume |
+| [[amzDefaultBreath]] | Default sound of breathing |
+| [[ibmExprType:TYPE&#124;TEXT]] | Expressiveness type |
+| [[ibmTransType:TYPE,ibmStrength:SCALE&#124;TEXT]] | Voice transformation |
 
 
 More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/).
