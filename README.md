@@ -22,8 +22,7 @@ $ yarn add wiki2ssml
 | `[[volume:SCALE\|TEXT]]` | Speaking volume |
 | `[[speed:SCALE\|TEXT]]` | Speaking rate |
 | `[[pitch:SCALE\|TEXT]]` | Speaking pitch |
-| `[[silence:TEXT]]` | Pause with duration |
-| `[[strength:TEXT]]` | Pause with strength |
+| `[[silence:DURATION,strength:STRENGTH]]` | Pause with duration and strength |
 | `[[emphasis:LEVEL\|TEXT]]` | Emphasis with LEVEL |
 | `[[audio:AUDIO_URI]]` | Audio embedded into speech|
 | `[[lang:LANGUAGE\|TEXT]]` | Language indicator |
@@ -33,9 +32,23 @@ $ yarn add wiki2ssml
 | `[[voice:NAME\|TEXT]]` | Voice name it should be said with |
 | `[[pos:POS\|TEXT]]` | Part of speech it should be prounouced as |
 | `[[substitute:TEXT1\|TEXT2]]` | Replace TEXT2 with TEXT1 as substitution |
-| `[[alphabet:ALP,pronunciation:PRO\|TEXT]]` | Phonetic pronunciation |
+| `[[alphabet:ALPHABET,pronunciation:PRONUNCIATION\|TEXT]]` | Phonetic pronunciation |
 | `[[volume:SCALE,speed:SCALE,pitch:SCALE\|TEXT]]` | Speaking volume, rate and pitch |
 | `[[type:TYPE,format:FORMAT,detail:DETAIL\|TEXT]]` | Type it should be said as |
+| `[[mark:NAME\|TEXT]]` | Mark referencing a location |
+
+# Supported Vendor-Specific Markups
+| Expressions        | Operations|
+| ------------- |-------------|
+| `[[amzWhispered\|TEXT]]` | Whispering |
+| `[[amzPhonation:soft\|TEXT]]` | Speaking Softly |
+| `[[amzTimbre:SCALE\|TEXT]]` | Controlling Timbre |
+| `[[amzDRC\|TEXT]]` | Dynamic Range Compression |
+| `[[amzBreathDuration:SCALE,amzBreathVolume:SCALE]]` | Breathing with duration and volume |
+| `[[amzDefaultBreath]]` | Default sound of breathing |
+| `[[ibmExprType:TYPE|TEXT]]` | Expressiveness type |
+| `[[ibmTransType:TYPE,ibmStrength:SCALE\|TEXT]]` | Voice transformation |
+
 
 More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/).
 

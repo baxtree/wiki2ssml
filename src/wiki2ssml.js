@@ -12,8 +12,8 @@ module.exports = (() => {
         throw new SyntaxError(e.message);
     }
 
-    var _getSsmlHead = (language) => {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><speak version=\"1.1\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
+    var _getSsmlHead = (language, version) => {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><speak version=\"" + version + "\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
               "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
               "xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" " +
               "xml:lang=\"" + language + "\">";
@@ -23,13 +23,16 @@ module.exports = (() => {
         return "</speak>";
     };
 
-    var _getSsmlAsString = (ssmlBody, language) => {
-        return _getSsmlHead(language) + ssmlBody + _getSsmlTail();
+    var _getSsmlAsString = (ssmlBody, language, version) => {
+        return _getSsmlHead(language, version) + ssmlBody + _getSsmlTail();
     };
 
-    var _parseToSsml = (ssmlStr, languageCode) => {
-        if(!languageCode) {
+    var _parseToSsml = (ssmlStr, languageCode, version) => {
+        if (!languageCode) {
             throw new ArgumentError("Language code is missing when calling parseToSsml");
+        }
+        if (typeof(version) === "undefined") {
+            version = "1.1";
         }
         try {
             var parsed = _parser.parse(ssmlStr);
@@ -37,7 +40,7 @@ module.exports = (() => {
         catch (e) {
             throw new SyntaxError(e.message);
         }
-        return _getSsmlAsString(parsed, languageCode);
+        return _getSsmlAsString(parsed, languageCode, version);
     };
 
     class ArgumentError extends Error {
