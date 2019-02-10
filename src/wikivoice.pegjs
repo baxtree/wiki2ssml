@@ -5,7 +5,15 @@
         for (var i = 0; i < matches.length; i++) {
             matches[i] = matches[i][1];
         }
-        return matches.join("");
+        return matches.join("").replace(/["'&<>]/g, (char) => {
+            switch (char) {
+                case "\"": return "&quot;";
+                case "'": return "&apos;";
+                case "&": return "&amp;";
+                case "<": return "&lt;";
+                case ">": return "&gt;";
+            }
+      });
     }
 
     function toTime(matches) {
@@ -60,9 +68,15 @@ TextAndStatement
     }
 
 Text
-  = text:(!"[[" .)*
+  = text:(!("[[" / "]]") .)*
     {
       return toText(text);
+    }
+
+Target
+  = text_left:Text statement:Statement* text_right:Text
+    {
+      return text_left + statement + text_right;
     }
 
 Statement
@@ -87,99 +101,99 @@ Prosody
     / Speed / Pitch / Volume
 
 SpeedPitchVolume
-  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 SpeedVolumePitch
-  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 PitchSpeedVolume
-  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 PitchVolumeSpeed
-  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 VolumeSpeedPitch
-  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 VolumePitchSpeed
-  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 SpeedPitch
-  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '">' + target + '</prosody>';
     }
 
 SpeedVolume
-  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 PitchSpeed
-  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'pitch="' + toPitch(pitch) + '">' + target + '</prosody>';
     }
 
 PitchVolume
-  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "," _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" target:Target "]]"
     {
-      return '<prosody pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 VolumeSpeed
-  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:RATE _ "|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 VolumePitch
-  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "," _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" target:Target "]]"
     {
-      return '<prosody pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody pitch="' + toPitch(pitch) + '" ' + 'volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 Speed
-  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _"|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("speed"i / "spe"i) _ ":" _ speed:RATE _"|" target:Target "]]"
     {
-      return '<prosody rate="' + toRate(speed) + '">' + toText(text) + '</prosody>';
+      return '<prosody rate="' + toRate(speed) + '">' + target + '</prosody>';
     }
 
 Pitch
-  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pitch"i / "pit"i) _ ":" _ pitch:PITCH _ "|" target:Target "]]"
     {
-      return '<prosody pitch="' + toPitch(pitch) + '">' + toText(text) + '</prosody>';
+      return '<prosody pitch="' + toPitch(pitch) + '">' + target + '</prosody>';
     }
 
 Volume
-  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("volume"i / "vol"i) _ ":" _ volume:VOLUME _ "|" target:Target "]]"
     {
-      return '<prosody volume="' + toVolume(volume) + '">' + toText(text) + '</prosody>';
+      return '<prosody volume="' + toVolume(volume) + '">' + target + '</prosody>';
     }
 
 Emphasis
-  = "[[" _ ("emphasis"i / "emp"i) _ ":" _ level:LEVEL _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("emphasis"i / "emp"i) _ ":" _ level:LEVEL _ "|" target:Target "]]"
     {
-      return '<emphasis level="' + level + '">' + toText(text) + '</emphasis>';
+      return '<emphasis level="' + level + '">' + target + '</emphasis>';
     }
 
 Silence
@@ -222,21 +236,21 @@ Audio
     }
 
 Lang
-  = "[[" _ ("lang"i / "lan"i) _ ":" lang:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("lang"i / "lan"i) _ ":" lang:(!"|" .)+ "|" target:Target "]]"
     {
-      return '<lang xml:lang="' + toText(lang) + '">' + toText(text) + '</lang>'
+      return '<lang xml:lang="' + toText(lang) + '">' + target + '</lang>'
     }
 
 Paragraph
-  = "[[" _ ("paragraph"i / "par"i) _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("paragraph"i / "par"i) _ "|" target:Target "]]"
     {
-      return '<p>' + toText(text) + '</p>'
+      return '<p>' + target + '</p>'
     }
 
 Sentence
-  = "[[" _ ("sentence"i / "sen"i) _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("sentence"i / "sen"i) _ "|" target:Target "]]"
     {
-      return '<s>' + toText(text) + '</s>'
+      return '<s>' + target + '</s>'
     }
 
 Type
@@ -244,94 +258,94 @@ Type
     / InterpretFormat / FormatInterpret / Interpret
 
 InterpretFormatDetail
-  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + target + '</say-as>';
     }
 
 InterpretDetailFormat
-  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + target + '</say-as>';
     }
 
 FormatInterpretDetail
-  = "[[" _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + target + '</say-as>';
     }
 
 FormatDetailInterpret
-  = "[[" _  ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _  ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + target + '</say-as>';
     }
 
 DetailFormatInterpret
-  = "[[" _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("type"i / "typ"i) _":" _ interpret:INTERPRET _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("type"i / "typ"i) _":" _ interpret:INTERPRET _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + target + '</say-as>';
     }
 
 DetailInterpretFormat
-  = "[[" _  ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _  ("detail"i / "det"i) _ ":" _ detail:DETAIL _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '" detail="' + toDetail(detail) + '">' + target + '</say-as>';
     }
 
 FormatInterpret
-  = "[[" _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "," _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '">' + target + '</say-as>';
     }
 
 InterpretFormat
-  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "," _ ("format"i / "for"i) _ ":" _ format:FORMAT _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '" format="' + format + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '" format="' + format + '">' + target + '</say-as>';
     }
 
 Interpret
-  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("type"i / "typ"i) _ ":" _ interpret:INTERPRET _ "|" target:Target "]]"
     {
-      return '<say-as interpret-as="' + interpret + '">' + toText(text) + '</say-as>';
+      return '<say-as interpret-as="' + interpret + '">' + target + '</say-as>';
     }
 
 Voice
-  = "[[" _ ("voice"i / "voi"i) _ ":" _ name:(!"|" .)+ _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("voice"i / "voi"i) _ ":" _ name:(!"|" .)+ _ "|" target:Target "]]"
     {
-      return '<voice name="' + toText(name) + '">' + toText(text) + '</voice>';
+        return '<voice name="' + toText(name) + '">' + target + '</voice>';
     }
 
 PartOfSpeech
-  = "[[" _ ("pos"i) _ ":" _ role:(!"|" .)+ _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pos"i) _ ":" _ role:(!"|" .)+ _ "|" target:Target "]]"
     {
-      return '<w role="' + toText(role) + '">' + toText(text) + "</w>"
+      return '<w role="' + toText(role) + '">' + target + "</w>"
     }
 
 Phoneme
   = AlphabetPronunciation / PronunciationAlphabet / Pronunciation
 
 AlphabetPronunciation
-  = "[[" _ ("alphabet"i / "alp"i) _ ":" _ alphabet:(!"," .)+ "," _ ("pronunciation"i / "pro"i) _ ":" _ pronunciation:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("alphabet"i / "alp"i) _ ":" _ alphabet:(!"," .)+ "," _ ("pronunciation"i / "pro"i) _ ":" _ pronunciation:(!"|" .)+ "|" target:Target "]]"
     {
-      return '<phoneme alphabet="' + toText(alphabet) + '" ph="' + toText(pronunciation) + '">' + toText(text) + '</phoneme>';
+      return '<phoneme alphabet="' + toText(alphabet) + '" ph="' + toText(pronunciation) + '">' + target + '</phoneme>';
     }
 
 PronunciationAlphabet
-  = "[[" _ ("pronunciation"i / "pro"i) _ ":" _ pronunciation:(!"," .)+ "," _ ("alphabet"i / "alp"i) _ ":" _ alphabet:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pronunciation"i / "pro"i) _ ":" _ pronunciation:(!"," .)+ "," _ ("alphabet"i / "alp"i) _ ":" _ alphabet:(!"|" .)+ "|" target:Target "]]"
     {
-      return '<phoneme alphabet="' + toText(alphabet) + '" ph="' + toText(pronunciation) + '">' + toText(text) + '</phoneme>';
+      return '<phoneme alphabet="' + toText(alphabet) + '" ph="' + toText(pronunciation) + '">' + target + '</phoneme>';
     }
 
 Pronunciation
-  = "[[" _ ("pronunciation"i / "pro"i) _ ":" _ pronunciation:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("pronunciation"i / "pro"i) _ ":" _ pronunciation:(!"|" .)+ "|" target:Target "]]"
     {
-      return '<phoneme ph="' + toText(pronunciation) + '">' + toText(text) + '</phoneme>';
+      return '<phoneme ph="' + toText(pronunciation) + '">' + target + '</phoneme>';
     }
 
 Mark
-  = "[[" _ ("mark"i / "mar"i) _ ":" name:(!"|" .)+ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("mark"i / "mar"i) _ ":" name:(!"]]" .)+ "]]"
     {
       return '<mark name="' + toText(name) + '"/>';
     }
@@ -373,31 +387,31 @@ NON_NEGATIVE_PERCENTAGE
   = [0-9]+"%"
 
 VendorExtension
-  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression / AmazonBreath
-    / IBMExpressiveness / IBMVoiceTransformation
+  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression / AmazonBreath / AmazonAutoBreaths
+    / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
 
 AmazonWhispered
-  = "[[" _ ("amzWhispered"i / "aw"i) _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("amzWhispered"i / "aw"i) _ "|" target:Target "]]"
     {
-      return '<amazon:effect name="whispered">' + toText(text) + '</amazon:effect>';
+      return '<amazon:effect name="whispered">' + target + '</amazon:effect>';
     }
 
 AmazonPhonation
-  = "[[" _ ("amzPhonation"i / "ap"i) _ ":" _ phonation:AMAZON_PHONATION _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("amzPhonation"i / "ap"i) _ ":" _ phonation:AMAZON_PHONATION _ "|" target:Target "]]"
     {
-      return '<amazon:effect phonation="' + phonation + '">' + toText(text) + '</amazon:effect>';
+      return '<amazon:effect phonation="' + phonation + '">' + target + '</amazon:effect>';
     }
 
 AmazonTimbre
-  = "[[" _ ("amzTimbre"i / "at"i) _ ":" _ timbre:PERCENTAGE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("amzTimbre"i / "at"i) _ ":" _ timbre:PERCENTAGE _ "|" target:Target "]]"
     {
-      return '<amazon:effect vocal-tract-length="' + toRate(timbre) + '">' + toText(text) + '</amazon:effect>';
+      return '<amazon:effect vocal-tract-length="' + toRate(timbre) + '">' + target + '</amazon:effect>';
     }
 
 AmazonDynamicRangeCompression
-  = "[[" _ ("amzDRC"i / "adrc"i) _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("amzDRC"i / "adrc"i) _ "|" target:Target "]]"
     {
-      return '<amazon:effect name="drc">' + toText(text) + '</amazon:effect>';
+      return '<amazon:effect name="drc">' + target + '</amazon:effect>';
     }
 
 AmazonBreath
@@ -435,6 +449,118 @@ AmazonDefaultBreath
       return '<amazon:breath/>';
     }
 
+AmazonAutoBreaths
+  = AmazonAutoBreathsVolumeFrequencyDuration / AmazonAutoBreathsVolumeDurationFrequency / AmazonAutoBreathsDurationFrequencyVolume
+  / AmazonAutoBreathsDurationVolumeFrequency / AmazonAutoBreathsFrequencyDurationVolume / AmazonAutoBreathsFrequencyVolumeDuration
+  / AmazonAutoBreathsVolumeDuration / AmazonAutoBreathsDurationVolume
+  / AmazonAutoBreathsVolumeFrequency / AmazonAutoBreathsFrequencyVolume
+  / AmazonAutoBreathsFrequencyDuration / AmazonAutoBreathsDurationFrequency
+  / AmazonAutoBreathsVolume / AmazonAutoBreathsFrequency / AmazonAutoBreathsDuration
+  / AmazonDefaultAutoBreaths
+
+AmazonAutoBreathsVolumeFrequencyDuration
+  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsVolumeDurationFrequency
+  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsDurationFrequencyVolume
+  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsDurationVolumeFrequency
+  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsFrequencyDurationVolume
+  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsFrequencyVolumeDuration
+  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsVolumeFrequency
+  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsFrequencyVolume
+  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsVolumeDuration
+  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsDurationVolume
+  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsFrequencyDuration
+  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+
+AmazonAutoBreathsDurationFrequency
+  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsVolume
+  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths volume="' + volume + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsFrequency
+  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths frequency="' + frequency + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonAutoBreathsDuration
+  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths duration="' + duration + '">' + target + '</amazon:auto-breaths>';
+    }
+
+AmazonDefaultAutoBreaths
+  = "[[" _ ("amzDefaultAutoBreaths"i / "adab"i) _ "|" target:Target "]]"
+    {
+      return '<amazon:auto-breaths>' + target + '</amazon:auto-breaths>';
+    }
+
+AMAZON_VOLUME
+  = "default" / "x-soft" / "soft" / "medium" / "loud" / "x-loud"
+
+AMAZON_FREQUENCY
+  = "default" / "x-low" / "low" / "medium" / "high" / "x-high"
+
 AMAZON_PHONATION
   = "soft"
 
@@ -442,31 +568,142 @@ AMAZON_DURATION
   = "x-short" / "short" / "medium" / "long" / "x-long" / "default"
 
 IBMExpressiveness
-  = "[[" _ ("ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
     {
-      return '<express-as type="' + expressiveness + '">' + toText(text) + '</express-as>';
+      return '<express-as type="' + expressiveness + '">' + target + '</express-as>';
     }
 
 IBMVoiceTransformation
   = IBMTransformationTypeStrength / IBMTransformationStrengthType / IBMTransformationType
 
 IBMTransformationTypeStrength
-  = "[[" _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "," _ ("ibmStrength"i / "ist"i) _ ":" _ strength:PERCENTAGE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "," _ ("ibmTransStrength"i / "its"i) _ ":" _ strength:PERCENTAGE _ "|" target:Target "]]"
     {
-      return '<voice-transformation type="' + type + '" strength="' + toRate(strength) + '">' + toText(text) + '</voice-transformation>';
+      return '<voice-transformation type="' + type + '" strength="' + toRate(strength) + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationStrengthType
-  = "[[" _ ("ibmStrength"i / "ist"i) _ ":" _ strength:PERCENTAGE _ "," _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("ibmTransStrength"i / "its"i) _ ":" _ strength:PERCENTAGE _ "," _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" target:Target "]]"
     {
-      return '<voice-transformation type="' + type + '" strength="' + toRate(strength) + '">' + toText(text) + '</voice-transformation>';
+      return '<voice-transformation type="' + type + '" strength="' + toRate(strength) + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationType
-  = "[[" _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" text:(!"]]" .)+ "]]"
+  = "[[" _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" target:Target "]]"
     {
-      return '<voice-transformation type="' + type + '">' + toText(text) + '</voice-transformation>';
+      return '<voice-transformation type="' + type + '">' + target + '</voice-transformation>';
     }
+
+IBMVoiceCustomTransformation
+  = IBMTransformationBreathinessPitchRangeTimbre
+    / IBMTransformationBreathinessTimbrePitchRange
+    / IBMTransformationPitchRangeTimbreBreathiness
+    / IBMTransformationPitchRangeBreathinessTimbre
+    / IBMTransformationTimbreBreathinessPitchRange
+    / IBMTransformationTimbrePitchRangeBreathiness
+    / IBMTransformationBreathinessPitchRange / IBMTransformationPitchRangeBreathiness
+    / IBMTransformationPitchRangeTimbre / IBMTransformationTimbrePitchRange
+    / IBMTransformationTimbreBreathiness / IBMTransformationBreathinessTimbre
+    / IBMTransformationBreathiness / IBMTransformationPitchRange / IBMTransformationTimbre
+
+IBMTransformationBreathinessPitchRangeTimbre
+  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationBreathinessTimbrePitchRange
+  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationPitchRangeTimbreBreathiness
+  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationPitchRangeBreathinessTimbre
+  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationTimbreBreathinessPitchRange
+  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationTimbrePitchRangeBreathiness
+  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationBreathinessPitchRange
+  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationPitchRangeBreathiness
+  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationPitchRangeTimbre
+  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationTimbrePitchRange
+  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationTimbreBreathiness
+  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationBreathinessTimbre
+  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationBreathiness
+  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" breathiness="' + breathiness + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationPitchRange
+  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" pitch_range="' + pitch_range + '">' + target + '</voice-transformation>';
+    }
+
+IBMTransformationTimbre
+  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+    {
+      return '<voice-transformation type="Custom" timbre="' + timbre + '">' + target + '</voice-transformation>';
+    }
+
+IBM_BREATHINESS
+  = "x-low" / "low" / "default" / "high" / "x-high" / PERCENTAGE
+
+IBM_PITCH_RANGE
+  = "x-narrow" / "narrow" / "default" / "wide" / "x-wide" / PERCENTAGE
+
+IBM_TIMBRE
+  = "Sunrise" / "Breeze"
 
 IBM_TRANSTYPE
   = "Young" / "Soft"

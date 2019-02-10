@@ -1,6 +1,6 @@
 {
   "name": "wiki2ssml",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Wiki2SSML provides the WikiVoice markup language used for fine-tuning synthesised voice.",
   "license": "Apache-2.0",
   "main": "index.js",
@@ -14,10 +14,13 @@
   },
   "keywords": [
     "ssml",
-    "markup language",
+    "wikitext",
     "text-to-speech",
     "voice tuning",
-    "wikitext"
+    "amazon polly",
+    "google cloud tts",
+    "ibm watson tts",
+    "microsoft azure tts"
   ],
   "author": {
     "name": "Xi Bai",

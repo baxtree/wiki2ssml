@@ -23,11 +23,8 @@ describe("Test wiki2ssml", () => {
     });
 
     describe("Test parser", () => {
-        before(() => {
-            undertest = require("../src/wiki2ssml");
-        });
-
         describe("Speed, pitch and volume", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[speed:x-slow|TEXT]]", expected: HEAD + "<prosody rate=\"x-slow\">TEXT</prosody>" + TAIL },
                 { expression: "[[speed:slow|TEXT]]", expected: HEAD + "<prosody rate=\"slow\">TEXT</prosody>" + TAIL },
@@ -98,9 +95,9 @@ describe("Test wiki2ssml", () => {
             ];
 
             var sad = [
-                { expression: "[[speed:unknown|TEXT]]", expected: HEAD + "<prosody rate=\"x-slow\">TEXT</prosody>" + TAIL },
-                { expression: "[[pitch:unknown|TEXT]]", expected: HEAD + "<prosody pitch=\"low\">TEXT</prosody>" + TAIL },
-                { expression: "[[volume:unknown|TEXT]]", expected: HEAD + "<prosody volume=\"loud\">TEXT</prosody>" + TAIL }
+                { expression: "[[speed:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[pitch:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[volume:unknown|TEXT]]", expected: undertest.SyntaxError }
             ];
 
             runHappyTests(happy);
@@ -108,6 +105,7 @@ describe("Test wiki2ssml", () => {
         });
     
         describe("Emphasis level", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[emphasis:strong|TEXT]]", expected: HEAD + "<emphasis level=\"strong\">TEXT</emphasis>" + TAIL },
                 { expression: "[[emphasis:moderate|TEXT]]", expected: HEAD + "<emphasis level=\"moderate\">TEXT</emphasis>" + TAIL },
@@ -120,7 +118,7 @@ describe("Test wiki2ssml", () => {
             ];
 
             var sad = [
-                { expression: "[[emphasis:unknown|TEXT]]", expected: HEAD + "<emphasis level=\"strong\">TEXT</emphasis>" + TAIL }
+                { expression: "[[emphasis:unknown|TEXT]]", expected: undertest.SyntaxError }
             ];
 
             runHappyTests(happy);
@@ -128,6 +126,7 @@ describe("Test wiki2ssml", () => {
         });
     
         describe("Silence with duration", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[strength:none]]", expected: HEAD + "<break strength=\"none\"/>" + TAIL },
                 { expression: "[[strength:x-weak]]", expected: HEAD + "<break strength=\"x-weak\"/>" + TAIL },
@@ -150,8 +149,8 @@ describe("Test wiki2ssml", () => {
             ];
 
             var sad = [
-                { expression: "[[silence:unknown]]", expected: HEAD + "<break time=\"100s\"/>" + TAIL },
-                { expression: "[[strength:unknown]]", expected: HEAD + "<break strength=\"none\"/>" + TAIL }
+                { expression: "[[silence:unknown]]", expected: undertest.SyntaxError },
+                { expression: "[[strength:unknown]]", expected: undertest.SyntaxError }
             ];
             
             runHappyTests(happy);
@@ -159,6 +158,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Substitution", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[substitute:red color|red colour]]", expected: HEAD + "<sub alias=\"red color\">red colour</sub>" + TAIL },
                 { expression: "[[substitute:red color|]]", expected: HEAD + "<sub alias=\"red color\"></sub>" + TAIL },
@@ -170,6 +170,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Embedded audio", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[audio:https://example.mp3]]", expected: HEAD + "<audio src=\"https://example.mp3\"/>" + TAIL },
                 { expression: "[[aud:https://example.mp3]]", expected: HEAD + "<audio src=\"https://example.mp3\"/>" + TAIL }
@@ -179,6 +180,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Language code", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[lang:en-GB|TEXT]]", expected: HEAD + "<lang xml:lang=\"en-GB\">TEXT</lang>" + TAIL },
                 { expression: "[[lan:en-GB|TEXT]]", expected: HEAD + "<lang xml:lang=\"en-GB\">TEXT</lang>" + TAIL }
@@ -188,6 +190,7 @@ describe("Test wiki2ssml", () => {
         });
     
         describe("Paragraph and senctence", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[paragraph|TEXT]]", expected: HEAD + "<p>TEXT</p>" + TAIL },
                 { expression: "[[par|TEXT]]", expected: HEAD + "<p>TEXT</p>" + TAIL },
@@ -199,6 +202,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Phoneme with alphabet and pronunciation", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[pronunciation:təˈmɑːtəʊ|tomato]]", expected: HEAD + "<phoneme ph=\"təˈmɑːtəʊ\">tomato</phoneme>" + TAIL },
                 { expression: "[[pro:təˈmɑːtəʊ|tomato]]", expected: HEAD + "<phoneme ph=\"təˈmɑːtəʊ\">tomato</phoneme>" + TAIL },
@@ -211,6 +215,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Type for interpretation", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[type:cardinal|TEXT]]", expected: HEAD + "<say-as interpret-as=\"cardinal\">TEXT</say-as>" + TAIL },
                 { expression: "[[type:number|TEXT]]", expected: HEAD + "<say-as interpret-as=\"number\">TEXT</say-as>" + TAIL },
@@ -291,9 +296,9 @@ describe("Test wiki2ssml", () => {
             ];
 
             var sad = [
-                { expression: "[[type:unknown|TEXT]]", expected: HEAD + "<say-as interpret-as=\"cardinal\">TEXT</say-as>" + TAIL },
-                { expression: "[[type:date,format:unknown|TEXT]]", expected: HEAD + "<say-as interpret-as=\"date\" format=\"dmy\">TEXT</say-as>" + TAIL },
-                { expression: "[[type:time,format:hms24,detail:_|TEXT]]", expected: HEAD + "<say-as interpret-as=\"time\" format=\"hms24\" detail=\"1\">TEXT</say-as>" + TAIL }
+                { expression: "[[type:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[type:date,format:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[type:time,format:hms24,detail:_|TEXT]]", expected: undertest.SyntaxError }
             ];
 
             runHappyTests(happy);
@@ -301,6 +306,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Voice name", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[voice:NAME|TEXT]]", expected: HEAD + "<voice name=\"NAME\">TEXT</voice>" + TAIL },
                 { expression: "[[voi:NAME|TEXT]]", expected: HEAD + "<voice name=\"NAME\">TEXT</voice>" + TAIL }
@@ -310,6 +316,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Part of Speech", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[pos:VB|TEXT]]", expected: HEAD + "<w role=\"VB\">TEXT</w>" + TAIL }
             ];
@@ -318,15 +325,17 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Mark with name", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
-                { expression: "[[mark:NAME|TEXT]]", expected: HEAD + "<mark name=\"NAME\"/>" + TAIL },
-                { expression: "[[mar:NAME|TEXT]]", expected: HEAD + "<mark name=\"NAME\"/>" + TAIL }
+                { expression: "[[mark:NAME]]", expected: HEAD + "<mark name=\"NAME\"/>" + TAIL },
+                { expression: "[[mar:NAME]]", expected: HEAD + "<mark name=\"NAME\"/>" + TAIL }
             ];
 
             runHappyTests(happy);
         });
 
         describe("Default speaking", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "This is a test without markups", expected: HEAD + "This is a test without markups" + TAIL }
             ];
@@ -335,6 +344,7 @@ describe("Test wiki2ssml", () => {
         });
 
         describe("Vendor extensions", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[amzWhispered|TEXT]]", expected: HEAD + "<amazon:effect name=\"whispered\">TEXT</amazon:effect>" + TAIL },
                 { expression: "[[aw|TEXT]]", expected: HEAD + "<amazon:effect name=\"whispered\">TEXT</amazon:effect>" + TAIL },
@@ -354,19 +364,130 @@ describe("Test wiki2ssml", () => {
                 { expression: "[[abd:medium]]", expected: HEAD + "<amazon:breath duration=\"medium\"/>" + TAIL },
                 { expression: "[[amzDefaultBreath]]", expected: HEAD + "<amazon:breath/>" + TAIL },
                 { expression: "[[adb]]", expected: HEAD + "<amazon:breath/>" + TAIL },
+                { expression: "[[amzAutoBreathsVolume:medium,amzAutoBreathsFrequency:low,amzAutoBreathsDuration:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabv:medium,aabf:low,aabd:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsVolume:medium,amzAutoBreathsDuration:long,amzAutoBreathsFrequency:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabv:medium,aabd:long,aabf:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsDuration:long,amzAutoBreathsFrequency:low,amzAutoBreathsVolume:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabd:long,aabf:low,aabv:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsDuration:long,amzAutoBreathsVolume:medium,amzAutoBreathsFrequency:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabd:long,aabv:medium,aabf:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsFrequency:low,amzAutoBreathsVolume:medium,amzAutoBreathsDuration:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabf:low,aabv:medium,aabd:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsFrequency:low,amzAutoBreathsDuration:long,amzAutoBreathsVolume:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabf:low,aabd:long,aabv:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsVolume:medium,amzAutoBreathsFrequency:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabv:medium,aabf:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsFrequency:low,amzAutoBreathsVolume:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabf:low,aabv:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" frequency=\"low\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsDuration:long,amzAutoBreathsVolume:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabd:long,aabv:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsVolume:medium,amzAutoBreathsDuration:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabv:medium,aabd:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsFrequency:low,amzAutoBreathsDuration:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabf:low,aabd:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsDuration:long,amzAutoBreathsFrequency:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabd:long,aabf:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths frequency=\"low\" duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsVolume:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabv:medium|TEXT]]", expected: HEAD + "<amazon:auto-breaths volume=\"medium\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsFrequency:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths frequency=\"low\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabf:low|TEXT]]", expected: HEAD + "<amazon:auto-breaths frequency=\"low\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzAutoBreathsDuration:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[aabd:long|TEXT]]", expected: HEAD + "<amazon:auto-breaths duration=\"long\">TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[amzDefaultAutoBreaths|TEXT]]", expected: HEAD + "<amazon:auto-breaths>TEXT</amazon:auto-breaths>" + TAIL },
+                { expression: "[[adab|TEXT]]", expected: HEAD + "<amazon:auto-breaths>TEXT</amazon:auto-breaths>" + TAIL },
                 { expression: "[[ibmExprType:GoodNews|TEXT]]", expected: HEAD + "<express-as type=\"GoodNews\">TEXT</express-as>" + TAIL },
                 { expression: "[[iet:GoodNews|TEXT]]", expected: HEAD + "<express-as type=\"GoodNews\">TEXT</express-as>" + TAIL },
-                { expression: "[[ibmTransType:Young,ibmStrength:80%|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\" strength=\"80%\">TEXT</voice-transformation>" + TAIL },
-                { expression: "[[itt:Young,ist:80%|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\" strength=\"80%\">TEXT</voice-transformation>" + TAIL },
-                { expression: "[[ibmStrength:80%,ibmTransType:Young|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\" strength=\"80%\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransType:Young,ibmTransStrength:80%|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\" strength=\"80%\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itt:Young,its:80%|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\" strength=\"80%\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransStrength:80%,ibmTransType:Young|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\" strength=\"80%\">TEXT</voice-transformation>" + TAIL },
                 { expression: "[[ibmTransType:Young|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\">TEXT</voice-transformation>" + TAIL },
-                { expression: "[[itt:Young|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\">TEXT</voice-transformation>" + TAIL }
+                { expression: "[[itt:Young|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransBreathiness:high,ibmTransPitchRange:wide,ibmTransTimbre:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itb:high,itp:wide,itm:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransBreathiness:high,ibmTransTimbre:Sunrise,ibmTransPitchRange:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itb:high,itm:Sunrise,itp:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransPitchRange:wide,ibmTransTimbre:Sunrise,ibmTransBreathiness:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itp:wide,itm:Sunrise,itb:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransPitchRange:wide,ibmTransBreathiness:high,ibmTransTimbre:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itp:wide,itb:high,itm:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransTimbre:Sunrise,ibmTransBreathiness:high,ibmTransPitchRange:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itm:Sunrise,itp:wide,itb:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransTimbre:Sunrise,ibmTransPitchRange:wide,ibmTransBreathiness:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itm:Sunrise,itp:wide,itb:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransBreathiness:high,ibmTransPitchRange:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itb:high,itp:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransBreathiness:high,ibmTransTimbre:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itb:high,itm:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransPitchRange:wide,ibmTransTimbre:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itp:wide,itm:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransPitchRange:wide,ibmTransBreathiness:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itp:wide,itb:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" pitch_range=\"wide\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransTimbre:Sunrise,ibmTransBreathiness:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itm:Sunrise,itb:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransTimbre:Sunrise,ibmTransPitchRange:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itm:Sunrise,itp:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" pitch_range=\"wide\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransBreathiness:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itb:high|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" breathiness=\"high\">TEXT</voice-transformation>" + TAIL },  
+                { expression: "[[ibmTransPitchRange:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" pitch_range=\"wide\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itp:wide|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" pitch_range=\"wide\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[ibmTransTimbre:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL },
+                { expression: "[[itm:Sunrise|TEXT]]", expected: HEAD + "<voice-transformation type=\"Custom\" timbre=\"Sunrise\">TEXT</voice-transformation>" + TAIL }
+            ];
+
+            var sad = [
+                { expression: "[[amzPhonation:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[amzTimbre:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[amzBreathVolume:unknown]]", expected: undertest.SyntaxError },
+                { expression: "[[amzBreathDuration:unknown]]", expected: undertest.SyntaxError },
+                { expression: "[[amzAutoBreathsVolume:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[amzAutoBreathsFrequency:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[amzAutoBreathsDuration:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[ibmExprType:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[ibmTransType:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[ibmTransStrength:unknown,ibmTransType:Young|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[ibmTransBreathiness:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[ibmTransPitchRange:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[ibmTransTimbre:unknown|TEXT]]",expected: undertest.SyntaxError }
             ];
 
             runHappyTests(happy);
+            runSadTests(sad);
+        });
+
+        describe("Combined markups", () => {
+            undertest = require("../src/wiki2ssml");
+            var happy = [
+                { expression: "start [[volume:medium|TEXT]] middle [[silence:0.5s]] end", expected: HEAD + "start <prosody volume=\"medium\">TEXT</prosody> middle <break time=\"0.5s\"/> end" + TAIL },
+                { expression: "[[volume:medium|TEXT]] middle [[silence:0.5s]] end", expected: HEAD + "<prosody volume=\"medium\">TEXT</prosody> middle <break time=\"0.5s\"/> end" + TAIL },
+                { expression: "start [[volume:medium|TEXT]] middle [[silence:0.5s]]", expected: HEAD + "start <prosody volume=\"medium\">TEXT</prosody> middle <break time=\"0.5s\"/>" + TAIL },
+                { expression: "[[volume:medium|TEXT]] middle [[silence:0.5s]]", expected: HEAD + "<prosody volume=\"medium\">TEXT</prosody> middle <break time=\"0.5s\"/>" + TAIL },
+                { expression: "TEXT[[voice:NAME|TEXT[[lang:en-GB|TEXT]]TEXT]]TEXT", expected: HEAD + "TEXT<voice name=\"NAME\">TEXT<lang xml:lang=\"en-GB\">TEXT</lang>TEXT</voice>TEXT" + TAIL },
+                { expression: "[[voice:NAME|TEXT[[lang:en-GB|TEXT]]TEXT]]TEXT", expected: HEAD + "<voice name=\"NAME\">TEXT<lang xml:lang=\"en-GB\">TEXT</lang>TEXT</voice>TEXT" + TAIL },
+                { expression: "TEXT[[voice:NAME|TEXT[[lang:en-GB|TEXT]]TEXT]]", expected: HEAD + "TEXT<voice name=\"NAME\">TEXT<lang xml:lang=\"en-GB\">TEXT</lang>TEXT</voice>" + TAIL },
+                { expression: "[[voice:NAME|TEXT[[lang:en-GB|TEXT]]TEXT]]", expected: HEAD + "<voice name=\"NAME\">TEXT<lang xml:lang=\"en-GB\">TEXT</lang>TEXT</voice>" + TAIL },
+                { expression: "[[voice:NAME|[[lang:en-GB|TEXT]]TEXT]]", expected: HEAD + "<voice name=\"NAME\"><lang xml:lang=\"en-GB\">TEXT</lang>TEXT</voice>" + TAIL },
+                { expression: "[[voice:NAME|TEXT[[lang:en-GB|TEXT]]]]", expected: HEAD + "<voice name=\"NAME\">TEXT<lang xml:lang=\"en-GB\">TEXT</lang></voice>" + TAIL },
+                { expression: "[[speed:medium,volume:+6dB,pitch:medium|TEXT[[type:time,format:hms24,detail:1|TEXT]]]]", expected: HEAD + "<prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT<say-as interpret-as=\"time\" format=\"hms24\" detail=\"1\">TEXT</say-as></prosody>" + TAIL }
+            ];
+
+            var sad = [
+                { expression: "start [volume:medium|TEXT]] middle [[silence:0.5s]] end", expected: undertest.SyntaxError },
+                { expression: "[[volume:medium|TEXT] middle [[silence:0.5s]] end", expected: undertest.SyntaxError },
+                { expression: "start [[volume:medium|TEXT]] middle [silence:0.5s]]", expected: undertest.SyntaxError },
+                { expression: "[[volume:medium|TEXT]] middle [[silence:0.5s]", expected: undertest.SyntaxError },
+                { expression: "TEXT[voice:NAME|TEXT[[lang:en-GB|TEXT]]TEXT]]TEXT", expected: undertest.SyntaxError },
+                { expression: "[[voice:NAME|TEXT[lang:en-GB|TEXT]]TEXT]]TEXT", expected: undertest.SyntaxError },
+                { expression: "TEXT[[voice:NAME|TEXT[[lang:en-GB|TEXT]TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[voice:NAME|TEXT[[lang:en-GB|TEXT]]TEXT]", expected: undertest.SyntaxError }
+            ];
+
+            runHappyTests(happy);
+            runSadTests(sad);
         });
 
         it("should ignore whitespaces", () => {
+            undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[ speed: medium ,volume: +6dB,pitch: medium|TEXT]]", expected: HEAD + "<prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody>" + TAIL },
                 { expression: "[[emphasis :none|TEXT]]", expected: HEAD + "<emphasis level=\"none\">TEXT</emphasis>" + TAIL },
@@ -390,7 +511,15 @@ describe("Test wiki2ssml", () => {
             });
         });
 
+        it("should escape control characters", () => {
+            undertest = require("../src/wiki2ssml");
+            var parsed = undertest.parseToSsml("[[volume:+6dB|\"a\" + 'b' & c <> d]]", "en-GB");
+            expect(parsed).to.be.a("string");
+            expect(parsed).to.equal(HEAD + "<prosody volume=\"+6dB\">&quot;a&quot; + &apos;b&apos; &amp; c &lt;&gt; d</prosody>" + TAIL);
+        });
+
         it("should return original input which dose not have markups", () => {
+            undertest = require("../src/wiki2ssml");
             var text_without_markup = "This is a test without markups";
             var parsed = undertest.parseToSsml(text_without_markup, "en-GB");
             expect(parsed).to.be.a("string");
@@ -398,18 +527,21 @@ describe("Test wiki2ssml", () => {
         });
 
         it("should use a specific SSML version parsed in", () => {
+            undertest = require("../src/wiki2ssml");
             var parsed = undertest.parseToSsml("[[volume:+6dB|TEXT]]", "en-GB", "1.0");
             expect(parsed).to.be.a("string");
             expect(parsed).to.have.string("version=\"1.0\"");
         });
 
         it("should detect and validate markups", () => {
+            undertest = require("../src/wiki2ssml");
             expect(undertest.hasValidMarkups("[[volume:medium|TEXT]] and [[silence:0.5s]] and [[substitute:substitute|original]] are markups")).to.be.true;
             expect(undertest.hasValidMarkups("This is a test without valid [[markups]]")).to.be.false;
             expect(undertest.hasValidMarkups("This is a test with no markup")).to.be.false;
         });
 
         it("should strip markups and output plain text", () => {
+            undertest = require("../src/wiki2ssml");
             var parsed = undertest.parseToPlainText("[[volume:medium|TEXT]] and [[silence:0.5s]] and [[substitute:substitute|original]] are present");
             expect(parsed).to.be.a("string");
             expect(parsed).to.equal("TEXT and  and original are present");
@@ -417,6 +549,7 @@ describe("Test wiki2ssml", () => {
 
         describe("Errors", () => {
             it("should throw SyntaxError on incorrect grammar", () => {
+                undertest = require("../src/wiki2ssml");
                 try {
                     undertest.reloadGrammar("incorrect");
                     expect.fail();
@@ -427,6 +560,7 @@ describe("Test wiki2ssml", () => {
             });
   
             it("should throw ArgumentError on missing language code", () => {
+                undertest = require("../src/wiki2ssml");
                 try {
                     undertest.parseToSsml("[[volume:+6dB|TEXT]]");
                     expect.fail();
@@ -456,7 +590,7 @@ describe("Test wiki2ssml", () => {
                     undertest.parseToSsml(test.expression, "en-GB");
                     expect.fail();
                 } catch (e) {
-                    expect(e instanceof undertest.SyntaxError).to.be.true;
+                    expect(e instanceof test.expected).to.be.true;
                     expect(e.message).to.have.string("Expected");
                 }
             });

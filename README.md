@@ -35,22 +35,25 @@ $ yarn add wiki2ssml
 | [[alphabet:ALPHABET,pronunciation:PRONUNCIATION&#124;TEXT]] | Phonetic pronunciation |
 | [[volume:SCALE,speed:SCALE,pitch:SCALE&#124;TEXT]] | Speaking volume, rate and pitch |
 | [[type:TYPE,format:FORMAT,detail:DETAIL&#124;TEXT]] | Type it should be said as |
-| [[mark:NAME&#124;TEXT]] | Mark referencing a location |
+| [[mark:NAME]] | Mark referencing a location |
 
 # Supported Vendor-Specific Markups
 | Expressions        | Operations|
 | ------------- |-------------|
 | [[amzWhispered&#124;TEXT]] | Whispering |
-| [[amzPhonation:soft&#124;TEXT]] | Speaking Softly |
+| [[amzPhonation:PHONATION&#124;TEXT]] | Speaking Softly |
 | [[amzTimbre:SCALE&#124;TEXT]] | Controlling Timbre |
 | [[amzDRC&#124;TEXT]] | Dynamic Range Compression |
-| [[amzBreathDuration:SCALE,amzBreathVolume:SCALE]] | Breathing with duration and volume |
-| [[amzDefaultBreath]] | Default sound of breathing |
+| [[amzBreathDuration:SCALE,amzBreathVolume:SCALE]] | Breathing based on the manual model |
+| [[amzDefaultBreath]] | Default breathing based on the manual model |
+| [[amzAutoBreathsVolume:SCALE,amzAutoBreathsFrequency:SCALE,amzAutoBreathsDuration:SCALE&#124;TEXT]] | Breathing based on the automated model |
+| [[amzDefaultAutoBreaths]] | Default breathing based on the automated model |
 | [[ibmExprType:TYPE&#124;TEXT]] | Expressiveness type |
-| [[ibmTransType:TYPE,ibmStrength:SCALE&#124;TEXT]] | Voice transformation |
+| [[ibmTransType:TYPE,ibmTransStrength:SCALE&#124;TEXT]] | Voice transformation |
+| [[ibmTransBreathiness:SCALE,ibmTransPitchRange:SCALE,ibmTransTimbre:SCALE&#124;TEXT]] | Voice custom transformation |
 
 
-More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/).
+More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/). For ranges of vendor-specific values please refer to their online documents.
 
 # Example
 ```js
