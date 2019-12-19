@@ -25,7 +25,6 @@ jobs:
   include:
     - stage: lint
       script: npm run lint
-
     - stage: test
       script: npm run test
       after_success: ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec && ./node_modules/.bin/codecov
