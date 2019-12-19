@@ -5,10 +5,6 @@ notifications:
   email:
     - xi.bai.ed@gmail.com
 
-stages:
-  - lint
-  - test
-
 before_install: |
   [[ ! -x ~/npm/node_modules/.bin/npm ]] && {
     cd ~/npm && npm install npm
@@ -21,10 +17,14 @@ cache:
     - ~/.npm
     - ~/npm
 
+stages:
+  - lint
+  - test
+
 jobs:
   include:
     - stage: lint
       script: npm run lint
     - stage: test
       script: npm run test
-      after_success: ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec && ./node_modules/.bin/codecov
+      after_success: npm run coverage && npm run codecov

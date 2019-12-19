@@ -5,8 +5,10 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
+    "lint": "./node_modules/eslint/bin/eslint.js ./src/wiki2ssml.js ./test/wiki2ssml-test.js",
     "test": "./node_modules/mocha/bin/mocha ./test",
-    "lint": "./node_modules/eslint/bin/eslint.js ./src/wiki2ssml.js ./test/wiki2ssml-test.js"
+    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
+    "codecov": "./node_modules/.bin/codecov"
   },
   "repository": {
     "type": "git",
@@ -20,7 +22,8 @@
     "amazon polly",
     "google cloud tts",
     "ibm watson tts",
-    "microsoft azure tts"
+    "microsoft azure tts",
+    "nuance"
   ],
   "author": {
     "name": "Xi Bai",
@@ -31,11 +34,14 @@
   },
   "homepage": "https://github.com/baxtree/wiki2ssml#readme",
   "dependencies": {
-    "pegjs": "^0.10.0"
+    "pegjs": "^0.10.0",
+    "prettify-xml": "^1.2.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "codecov": "^3.6.1",
     "eslint": "^5.12.1",
+    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "xml2js": "^0.4.19"
   }
