@@ -1,0 +1,31 @@
+language: node_js
+node_js: "12"
+
+notifications:
+  email:
+    - xi.bai.ed@gmail.com
+
+stages:
+  - lint
+  - test
+
+before_install: |
+  [[ ! -x ~/npm/node_modules/.bin/npm ]] && {
+    cd ~/npm && npm install npm
+    cd -
+  } || true
+  export PATH=~/npm/node_modules/.bin:$PATH
+install: npm ci --ignore-scripts
+cache:
+  directories:
+    - ~/.npm
+    - ~/npm
+
+jobs:
+  include:
+    - stage: lint
+      script: npm script lint
+
+    - stage: test
+      script: npm script test
+      after_success: ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec && ./node_modules/.bin/codecov
