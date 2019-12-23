@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/baxtree/wiki2ssml.svg?branch=master)](https://travis-ci.com/baxtree/wiki2ssml) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml)
+
+
 # Wiki2SSML
 `wiki2ssml` can transform the `WikiVoice` markups into the W3C SSML widely supported by various text-to-speech services as an interchange format for synthesised voice tuning.
 
@@ -14,7 +17,7 @@ $ yarn add wiki2ssml
 ```
 # WikiVoice Format
 ```
-[[attribute:value(,attribute:value)*(|TEXT)*]]
+[[attribute(:value)*(,attribute:value)*(|target)*]]
 ```
 # Supported WikiVoice Markups
 | Expressions        | Operations|
@@ -52,20 +55,27 @@ $ yarn add wiki2ssml
 | [[ibmTransType:TYPE,ibmTransStrength:SCALE&#124;TEXT]] | Voice transformation |
 | [[ibmTransBreathiness:SCALE,ibmTransPitchRange:SCALE,ibmTransTimbre:SCALE&#124;TEXT]] | Voice custom transformation |
 
-
 More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/). For ranges of vendor-specific values please refer to their online documents.
+
+# parseToSsml(input, languageCode, options)
+- input `<string>` (required)
+- languageCode `<string>` (required: [RFC 1766](https://tools.ietf.org/html/rfc1766))
+- options `<object>` (optional)
+  - version `<string>` (default: "1.1")
+  - pretty `<boolean>` (default: false)
 
 # Example
 ```js
 var parser = require("wiki2ssml");
 try {
-    var ssml = parser.parseToSsml("[[volume:+2dB,speed:50%|Speak this with the volume increased by 2dB at half the default speech rate.]]", "en-GB");
+    var input = "[[volume:+2dB,speed:50%|Speak this with the volume increased by 2dB at half the default speech rate.]]";
+    var ssml = parser.parseToSsml(input, "en-GB", {pretty: true});
     console.log(ssml);
 } catch (e) {
     if (e instanceof parser.SyntaxError) {
-        // WikiVoice markups are invalid
+        // The input does not have valid WikiVoice markups
     } else if (e instanceof parser.ArgumentError) {
-        // The language code is missing
+        // Either the input or the language code is missing
     } else {
         // Handle any unspecified exceptions
     }
@@ -73,9 +83,8 @@ try {
 ```
 will output:
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
 <speak version="1.1" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd" xml:lang="en-GB">
-    <prosody volume="+2dB" rate="50%">
-    Speak this with the volume increased by 2dB at half the default speech rate.
-    </prosody>
+  <prosody rate="50%" volume="+2dB">Speak this with the volume increased by 2dB at half the default speech rate.</prosody>
 </speak>
 ```
