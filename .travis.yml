@@ -1,0 +1,30 @@
+language: node_js
+node_js: "12"
+
+notifications:
+  email:
+    - xi.bai.ed@gmail.com
+
+before_install: |
+  [[ ! -x ~/npm/node_modules/.bin/npm ]] && {
+    cd ~/npm && npm install npm
+    cd -
+  } || true
+  export PATH=~/npm/node_modules/.bin:$PATH
+install: npm ci --ignore-scripts
+cache:
+  directories:
+    - ~/.npm
+    - ~/npm
+
+stages:
+  - lint
+  - test
+
+jobs:
+  include:
+    - stage: lint
+      script: npm run lint
+    - stage: test
+      script: npm run test
+      after_success: npm run coverage && npm run codecov

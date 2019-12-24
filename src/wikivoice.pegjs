@@ -93,6 +93,8 @@ Statement
     / Voice
     / PartOfSpeech
     / Mark
+    / SeeAlso
+    / CacheControl
     / VendorExtension
 
 Prosody
@@ -348,6 +350,18 @@ Mark
   = "[[" _ ("mark"i / "mar"i) _ ":" name:(!"]]" .)+ "]]"
     {
       return '<mark name="' + toText(name) + '"/>';
+    }
+
+SeeAlso
+  = "[[" _ ("seeAlso"i / "see"i) _ ":" uri:(!"]]" .)* "]]"
+    {
+      return '<meta name="seeAlso" content="' + toText(uri) + '"/>'
+    }
+
+CacheControl
+  = "[[" _ ("cacheControl"i / "cac"i) _ ":" content:(!"]]" .)* "]]"
+    {
+      return '<meta http-equiv="Cache-Control" content="' + toText(content) + '"/>'
     }
 
 _ "optional whitespace"
