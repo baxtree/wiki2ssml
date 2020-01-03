@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/baxtree/wiki2ssml.svg?branch=master)](https://travis-ci.com/baxtree/wiki2ssml) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml)
+[![Build Status](https://travis-ci.com/baxtree/wiki2ssml.svg?branch=master)](https://travis-ci.com/baxtree/wiki2ssml) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml)![Node](https://img.shields.io/static/v1?label=node.js&message=&#8805;6.4.0&color=green)
+[![GitHub license](https://img.shields.io/github/license/baxtree/wiki2ssml)](https://github.com/baxtree/wiki2ssml/blob/master/LICENSE)
 
 
 # Wiki2SSML
@@ -39,6 +40,8 @@ $ yarn add wiki2ssml
 | [[volume:SCALE,speed:SCALE,pitch:SCALE&#124;TEXT]] | Speaking volume, rate and pitch |
 | [[type:TYPE,format:FORMAT,detail:DETAIL&#124;TEXT]] | Type it should be said as |
 | [[mark:NAME]] | Mark referencing a location |
+| [[seeAlso:URI] | URI providing additional information about marked-up content]
+| [[cacheControl:no-cache]] | No caching on marked-up content |
 
 # Supported Vendor-Specific Markups
 | Expressions        | Operations|
