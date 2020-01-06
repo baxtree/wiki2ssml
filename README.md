@@ -3,6 +3,7 @@
 
 
 # Wiki2SSML
+
 `wiki2ssml` can transform the `WikiVoice` markups into the W3C SSML widely supported by various text-to-speech services as an interchange format for synthesised voice tuning.
 
 # Introduction
@@ -16,11 +17,16 @@ or
 ```sh
 $ yarn add wiki2ssml
 ```
-# WikiVoice Format
+#
+<p align="center">
+<img src="./figures/wikivoice.png" alt="WikiVoice"/>
+</p>
+
+# Format
 ```
-[[attribute(:value)*(,attribute:value)*(|target)*]]
+[[attribute(:value)?(,attribute:value)*(|target)?]]
 ```
-# Supported WikiVoice Markups
+# Supported Markups
 | Expressions        | Operations|
 | ------------- |-------------|
 | [[volume:SCALE&#124;TEXT]] | Speaking volume |
@@ -43,7 +49,7 @@ $ yarn add wiki2ssml
 | [[seeAlso:URI] | URI providing additional information about marked-up content]
 | [[cacheControl:no-cache]] | No caching on marked-up content |
 
-# Supported Vendor-Specific Markups
+# Vendor-Specific Markups
 | Expressions        | Operations|
 | ------------- |-------------|
 | [[amzWhispered&#124;TEXT]] | Whispering |
