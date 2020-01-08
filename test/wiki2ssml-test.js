@@ -111,14 +111,14 @@ describe("Test wiki2ssml", () => {
                 { expression: "*[[pitch:medium,speed:medium,volume:+6dB|TEXT]]*", expected: HEAD + "<par><prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody></par>" + TAIL },
                 { expression: "#[[pitch:medium,speed:medium,volume:+6dB|TEXT]][[pitch:medium,speed:medium,volume:+6dB|TEXT]]#", expected: HEAD + "<seq><prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody><prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody></seq>" + TAIL }
             ];
-            
+
             var sad = [
                 { expression: "*[[pitch:medium,speed:medium,volume:+6dB|TEXT]]", expected: undertest.SyntaxError },
                 { expression: "#[[pitch:medium,speed:medium,volume:+6dB|TEXT]]", expected: undertest.SyntaxError },
                 { expression: "*[[pitch:medium,speed:medium,volume:+6dB|TEXT]]#", expected: undertest.SyntaxError },
                 { expression: "#[[pitch:medium,speed:medium,volume:+6dB|TEXT]]*", expected: undertest.SyntaxError }
             ];
-            
+
             runHappyTests(happy);
             runSadTests(sad);
         });
@@ -423,6 +423,22 @@ describe("Test wiki2ssml", () => {
                 { expression: "[[aem:excited,ain:low|TEXT]]", expected: HEAD + "<amazon:emotion name=\"excited\" intensity=\"low\">TEXT</amazon:emotion>" + TAIL },
                 { expression: "[[amzIntensity:low,amzEmotion:excited|TEXT]]", expected: HEAD + "<amazon:emotion intensity=\"low\" name=\"excited\">TEXT</amazon:emotion>" + TAIL },
                 { expression: "[[ain:low,aem:excited|TEXT]]", expected: HEAD + "<amazon:emotion intensity=\"low\" name=\"excited\">TEXT</amazon:emotion>" + TAIL },
+                { expression: "[[gglMediaSpeak|TEXT]]", expected: HEAD + "<media><speak>TEXT</speak></media>" + TAIL },
+                { expression: "[[gms|TEXT]]", expected: HEAD + "<media><speak>TEXT</speak></media>" + TAIL },
+                { expression: "[[gglMediaSpeakEnd:10s|TEXT]]", expected: HEAD + "<media end=\"10s\"><speak>TEXT</speak></media>" + TAIL },
+                { expression: "[[gmse:10s|TEXT]]", expected: HEAD + "<media end=\"10s\"><speak>TEXT</speak></media>" + TAIL },
+                { expression: "[[gglMediaSpeakFadeIn:1s,gglMediaSpeakFadeOut:2s|TEXT]]", expected: HEAD + "<media fadeInDur=\"1s\" fadeOutDur=\"2s\"><speak>TEXT</speak></media>" + TAIL },
+                { expression: "[[gglMediaSpeakFadeOut:2s,gglMediaSpeakFadeIn:1s|TEXT]]", expected: HEAD + "<media fadeInDur=\"1s\" fadeOutDur=\"2s\"><speak>TEXT</speak></media>" + TAIL },
+                { expression: "[[gglMediaAudio:https://example.mp3]]", expected: HEAD + "<media><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gma:https://example.mp3]]", expected: HEAD + "<media><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gglMediaAudioFadeIn:1ms,gglMediaAudioFadeOut:2ms,gglMediaAudio:https://example.mp3]]", expected: HEAD + "<media fadeInDur=\"1ms\" fadeOutDur=\"2ms\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gglMediaAudio:https://example.mp3,gglMediaAudioFadeIn:1ms,gglMediaAudioFadeOut:2ms]]", expected: HEAD + "<media fadeInDur=\"1ms\" fadeOutDur=\"2ms\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gglMediaAudio:https://example.mp3,gglMediaAudioFadeOut:2s,gglMediaAudioFadeIn:1s]]", expected: HEAD + "<media fadeInDur=\"1s\" fadeOutDur=\"2s\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gglMediaAudioFadeIn:1ms,gglMediaAudio:https://example.mp3,gglMediaAudioFadeOut:2ms]]", expected: HEAD + "<media fadeInDur=\"1ms\" fadeOutDur=\"2ms\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gglMediaAudioFadeOut:2s,gglMediaAudio:https://example.mp3,gglMediaAudioFadeIn:1s]]", expected: HEAD + "<media fadeInDur=\"1s\" fadeOutDur=\"2s\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gmafi:1ms,gmafo:2ms,gglMediaAudio:https://example.mp3]]", expected: HEAD + "<media fadeInDur=\"1ms\" fadeOutDur=\"2ms\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gglMediaAudioFadeOut:2ms,gglMediaAudioFadeIn:1ms,gglMediaAudio:https://example.mp3]]", expected: HEAD + "<media fadeInDur=\"1ms\" fadeOutDur=\"2ms\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
+                { expression: "[[gmafo:2ms,gmafi:1ms,gglMediaAudio:https://example.mp3]]", expected: HEAD + "<media fadeInDur=\"1ms\" fadeOutDur=\"2ms\"><audio src=\"https://example.mp3\"/></media>" + TAIL },
                 { expression: "[[ibmExprType:GoodNews|TEXT]]", expected: HEAD + "<express-as type=\"GoodNews\">TEXT</express-as>" + TAIL },
                 { expression: "[[iet:GoodNews|TEXT]]", expected: HEAD + "<express-as type=\"GoodNews\">TEXT</express-as>" + TAIL },
                 { expression: "[[ibmTransType:Young,ibmTransStrength:80%|TEXT]]", expected: HEAD + "<voice-transformation type=\"Young\" strength=\"80%\">TEXT</voice-transformation>" + TAIL },
@@ -473,6 +489,9 @@ describe("Test wiki2ssml", () => {
                 { expression: "[[amzSpeakingStyle:unknown|TEXT]]", expected: undertest.SyntaxError },
                 { expression: "[[amzEmotion:unknown,amzIntensity:low|TEXT]]", expected: undertest.SyntaxError },
                 { expression: "[[amzIntensity:unknown, amzEmotion:excited|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[gglMediaSpeakEnd:unknown|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "[[gglMediaAudioFadeOut:unknown,gglMediaAudioFadeIn:1ms,gglMediaAudio:https://example.mp3]]", expected: undertest.SyntaxError },
+                { expression: "[[gglMediaAudioFadeOut:2s,gglMediaAudioFadeIn:unknown,gglMediaAudio:https://example.mp3]]", expected: undertest.SyntaxError },
                 { expression: "[[ibmExprType:unknown|TEXT]]", expected: undertest.SyntaxError },
                 { expression: "[[ibmTransType:unknown|TEXT]]", expected: undertest.SyntaxError },
                 { expression: "[[ibmTransStrength:unknown,ibmTransType:Young|TEXT]]", expected: undertest.SyntaxError },

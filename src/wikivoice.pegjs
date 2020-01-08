@@ -259,7 +259,7 @@ Substitute
     }
 
 Audio
-  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!"]]" .)* "]]"
+  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!"]]" .)+ "]]"
     {
       return '<audio src="' + toText(uri) + '"/>'
     }
@@ -380,7 +380,7 @@ Mark
     }
 
 SeeAlso
-  = "[[" _ ("seeAlso"i / "see"i) _ ":" uri:(!"]]" .)* "]]"
+  = "[[" _ ("seeAlso"i / "see"i) _ ":" uri:(!"]]" .)+ "]]"
     {
       return '<meta name="seeAlso" content="' + toText(uri) + '"/>'
     }
@@ -401,7 +401,7 @@ LEVEL
   = "strong" / "moderate" / "none" / "reduced"
 
 TIME
-  = [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+  = [0-9]+(.[0-9]+)?"h" / [0-9]+(.[0-9]+)?"min"/ [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
 
 RATE
   = "x-slow" / "slow" / "medium" / "fast" / "x-fast" / "default" / NON_NEGATIVE_PERCENTAGE
@@ -430,6 +430,7 @@ NON_NEGATIVE_PERCENTAGE
 VendorExtension
   = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression
     / AmazonBreath / AmazonAutoBreaths / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
+    / GoogleMediaContainer
     / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
 
 AmazonWhispered
@@ -635,6 +636,77 @@ AMAZON_EMOTION
 
 AMAZON_INTENSITY
   = "low" / "medium" / "high"
+
+GoogleMediaContainer
+  = GoolgeMediaSpeak / GoolgeMediaSpeakEnd / GoolgeMediaAudio
+    / GoolgeMediaSpeakFadeInFadeOut / GoolgeMediaSpeakFadeOutFadeIn
+    / GoolgeMediaAudioFadeInFadeOutMedia / GoolgeMediaAudioFadeOutFadeInMedia
+    / GoolgeMediaAudioMediaFadeInFadeOut / GoolgeMediaAudioMediaFadeOutFadeIn
+    / GoolgeMediaAudioFadeInMediaFadeOut / GoolgeMediaAudioFadeOutMediaFadeIn
+
+GoolgeMediaSpeak
+  = "[[" _ ("gglMediaSpeak"i / "gms"i) _ "|" target:Target "]]"
+    {
+      return '<media><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakEnd
+  = "[[" _ ("gglMediaSpeakEnd"i / "gmse"i) _ ":" _ time:TIME _ "|" target:Target "]]"
+    {
+      return '<media end="' + toTime(time) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakFadeInFadeOut
+  = "[[" _ ("gglMediaSpeakFadeIn"i / "gmsfi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaSpeakFadeOut"i / "gmsfo"i) _ ":" _ fade_out_Duration:TIME _ "|" target:Target "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakFadeOutFadeIn
+  = "[[" _ ("gglMediaSpeakFadeOut"i / "gmsfo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaSpeakFadeIn"i / "gmsfi"i) _ ":" _ fade_in_Duration:TIME _ "|" target:Target "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaAudio
+  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<media><audio src="' + toText(uri) + '"/></media>'
+    }
+GoolgeMediaAudioFadeInFadeOutMedia
+  = "[[" _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioFadeOutFadeInMedia
+  = "[[" _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+GoolgeMediaAudioMediaFadeInFadeOut
+  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioMediaFadeOutFadeIn
+  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioFadeInMediaFadeOut
+  = "[[" _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioFadeOutMediaFadeIn
+  = "[[" _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
 
 IBMExpressiveness
   = "[[" _ ("ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
