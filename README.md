@@ -47,6 +47,8 @@ $ yarn add wiki2ssml
 | [[mark:NAME]] | Mark referencing a location |
 | [[seeAlso:URI] | URI providing additional information about marked-up content]
 | [[cacheControl:no-cache]] | No caching on marked-up content |
+| &#42;[[...]][[...]]...[[...]]&#42; | &#60;par&#62; time container with one or more markups|
+| &#35;[[...]][[...]]...[[...]]&#35; | &#60;seq&#62; time container with one or more markups|
 
 # Vendor-Specific Markups
 | Expressions        | Operations|

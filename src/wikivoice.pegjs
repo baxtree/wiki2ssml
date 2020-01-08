@@ -56,19 +56,34 @@
     /* eslint-disable */
 }
 BEGIN
-  = text_and_statement:TextAndStatement* text:Text
+  = text_and_statement:TextAndStatements* text:Text
     {
       return text_and_statement.join("") + text;
     }
 
-TextAndStatement
+TextAndStatements
+  = TextParallelStatements / TextSequentialStatements / TextStatement
+
+TextParallelStatements
+  = text:Text statements:ParallelStatements
+    {
+      return text + statements;
+    }
+
+TextSequentialStatements
+  = text:Text statements:SequentialStatements
+    {
+      return text + statements;
+    }
+
+TextStatement
   = text:Text statement:Statement
     {
       return text + statement;
     }
 
 Text
-  = text:(!("[[" / "]]") .)*
+  = text:(!("[[" / "]]" / "*[[" / "]]*" / "#[[" / "]]#") .)*
     {
       return toText(text);
     }
@@ -77,6 +92,18 @@ Target
   = text_left:Text statement:Statement* text_right:Text
     {
       return text_left + statement + text_right;
+    }
+
+ParallelStatements
+  = "*" statements:Statement+ "*"
+    {
+      return "<par>" + statements.join("") + "</par>";
+    }
+
+SequentialStatements
+  = "#" statements:Statement+ "#"
+    {
+      return "<seq>" + statements.join("") + "</seq>";
     }
 
 Statement

@@ -91,7 +91,8 @@ describe("Test wiki2ssml", () => {
                 { expression: "[[volume:medium,speed:5%,pitch:medium|TEXT]]", expected: HEAD + "<prosody rate=\"5%\" pitch=\"medium\" volume=\"medium\">TEXT</prosody>" + TAIL },
                 { expression: "[[volume:+6dB,pitch:medium,speed:medium|TEXT]]", expected: HEAD + "<prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody>" + TAIL },
                 { expression: "[[pitch:medium,volume:medium,speed:5%|TEXT]]", expected: HEAD + "<prosody rate=\"5%\" pitch=\"medium\" volume=\"medium\">TEXT</prosody>" + TAIL },
-                { expression: "[[pitch:medium,speed:medium,volume:+6dB|TEXT]]", expected: HEAD + "<prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody>" + TAIL }
+                { expression: "[[pitch:medium,speed:medium,volume:+6dB|TEXT]]", expected: HEAD + "<prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody>" + TAIL },
+                { expression: "no markups", expected: HEAD + "no markups" + TAIL }
             ];
 
             var sad = [
@@ -100,6 +101,24 @@ describe("Test wiki2ssml", () => {
                 { expression: "[[volume:unknown|TEXT]]", expected: undertest.SyntaxError }
             ];
 
+            runHappyTests(happy);
+            runSadTests(sad);
+        });
+
+        describe("Time containers", () => {
+            undertest = require("../src/wiki2ssml");
+            var happy = [
+                { expression: "*[[pitch:medium,speed:medium,volume:+6dB|TEXT]]*", expected: HEAD + "<par><prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody></par>" + TAIL },
+                { expression: "#[[pitch:medium,speed:medium,volume:+6dB|TEXT]][[pitch:medium,speed:medium,volume:+6dB|TEXT]]#", expected: HEAD + "<seq><prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody><prosody rate=\"medium\" pitch=\"medium\" volume=\"+6dB\">TEXT</prosody></seq>" + TAIL }
+            ];
+            
+            var sad = [
+                { expression: "*[[pitch:medium,speed:medium,volume:+6dB|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "#[[pitch:medium,speed:medium,volume:+6dB|TEXT]]", expected: undertest.SyntaxError },
+                { expression: "*[[pitch:medium,speed:medium,volume:+6dB|TEXT]]#", expected: undertest.SyntaxError },
+                { expression: "#[[pitch:medium,speed:medium,volume:+6dB|TEXT]]*", expected: undertest.SyntaxError }
+            ];
+            
             runHappyTests(happy);
             runSadTests(sad);
         });
