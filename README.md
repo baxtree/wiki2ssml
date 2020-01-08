@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.com/baxtree/wiki2ssml.svg?branch=master)](https://travis-ci.com/baxtree/wiki2ssml) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml)![Node](https://img.shields.io/static/v1?label=node.js&message=&#8805;6.4.0&color=green)
-[![GitHub license](https://img.shields.io/github/license/baxtree/wiki2ssml)](https://github.com/baxtree/wiki2ssml/blob/master/LICENSE)
+[![Build Status](https://travis-ci.com/baxtree/wiki2ssml.svg?branch=master)](https://travis-ci.com/baxtree/wiki2ssml) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml) ![Node](https://img.shields.io/static/v1?label=node.js&message=&#8805;6.4.0&color=green) [![GitHub license](https://img.shields.io/github/license/baxtree/wiki2ssml)](https://github.com/baxtree/wiki2ssml/blob/master/LICENSE)
 
 
 # Wiki2SSML
@@ -60,6 +59,8 @@ $ yarn add wiki2ssml
 | [[amzDefaultBreath]] | Default breathing based on the manual model |
 | [[amzAutoBreathsVolume:SCALE,amzAutoBreathsFrequency:SCALE,amzAutoBreathsDuration:SCALE&#124;TEXT]] | Breathing based on the automated model |
 | [[amzDefaultAutoBreaths]] | Default breathing based on the automated model |
+| [[amzSpeakingStyle:STYLE&#124;TEXT]] | Speaking style |
+| [[amzEmotion:EMOTION,amzIntensity:SCALE&#124;TEXT]] | Speaking emotionally |
 | [[ibmExprType:TYPE&#124;TEXT]] | Expressiveness type |
 | [[ibmTransType:TYPE,ibmTransStrength:SCALE&#124;TEXT]] | Voice transformation |
 | [[ibmTransBreathiness:SCALE,ibmTransPitchRange:SCALE,ibmTransTimbre:SCALE&#124;TEXT]] | Voice custom transformation |
