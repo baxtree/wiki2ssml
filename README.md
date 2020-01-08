@@ -63,6 +63,11 @@ $ yarn add wiki2ssml
 | [[amzDefaultAutoBreaths]] | Default breathing based on the automated model |
 | [[amzSpeakingStyle:STYLE&#124;TEXT]] | Speaking style |
 | [[amzEmotion:EMOTION,amzIntensity:SCALE&#124;TEXT]] | Speaking emotionally |
+| [[gglMediaSpeak&#124;TEXT]] | Media container for speech |
+| [[gglMediaSpeakEnd:DURATION&#124;TEXT]] | Media container for speech with the ending time |
+| [[gglMediaSpeakFadeIn:DURATION,gglMediaSpeakFadeOut:DURATION&#124;TEXT]] | Media container for speach with fade |
+| [[gglMediaAudio:URI]] | Media container for audio |
+| [[gglMediaAudioFadeIn:DURATION,gglMediaAudioFadeOut:DURATION,gglMediaAudio:URI]] | Media container for audio with fade |
 | [[ibmExprType:TYPE&#124;TEXT]] | Expressiveness type |
 | [[ibmTransType:TYPE,ibmTransStrength:SCALE&#124;TEXT]] | Voice transformation |
 | [[ibmTransBreathiness:SCALE,ibmTransPitchRange:SCALE,ibmTransTimbre:SCALE&#124;TEXT]] | Voice custom transformation |
