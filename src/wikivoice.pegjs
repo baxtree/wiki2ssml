@@ -80,13 +80,13 @@ Target
     }
 
 Statement
-  = Prosody 
-    / Emphasis 
-    / Silence 
-    / Substitute 
-    / Audio 
-    / Lang 
-    / Paragraph 
+  = Prosody
+    / Emphasis
+    / Silence
+    / Substitute
+    / Audio
+    / Lang
+    / Paragraph
     / Sentence
     / Phoneme
     / Type
@@ -401,7 +401,8 @@ NON_NEGATIVE_PERCENTAGE
   = [0-9]+"%"
 
 VendorExtension
-  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression / AmazonBreath / AmazonAutoBreaths
+  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression
+    / AmazonBreath / AmazonAutoBreaths / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
     / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
 
 AmazonWhispered
@@ -569,6 +570,24 @@ AmazonDefaultAutoBreaths
       return '<amazon:auto-breaths>' + target + '</amazon:auto-breaths>';
     }
 
+AmazonSpeakingStyle
+  = "[[" _ ("amzSpeakingStyle"i / "ass"i) _ ":" _ style:AMAZON_STYLE _ "|" target:Target "]]"
+    {
+      return '<amazon:domain name="' + style + '">' + target + '</amazon:domain>';
+    }
+
+AmazonEmotionIntensity
+  = "[[" _ ("amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "," _ ("amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "|" target:Target "]]"
+    {
+      return '<amazon:emotion name="' + emotion + '" ' + 'intensity="' + intensity + '">' + target + '</amazon:emotion>';
+    }
+
+AmazonIntensityEmotion
+  = "[[" _ ("amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "," _ ("amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "|" target:Target "]]"
+    {
+      return '<amazon:emotion intensity="' + intensity + '" ' + 'name="' + emotion + '">' + target + '</amazon:emotion>';
+    }
+
 AMAZON_VOLUME
   = "default" / "x-soft" / "soft" / "medium" / "loud" / "x-loud"
 
@@ -580,6 +599,15 @@ AMAZON_PHONATION
 
 AMAZON_DURATION
   = "x-short" / "short" / "medium" / "long" / "x-long" / "default"
+
+AMAZON_STYLE
+  = "music" / "news"
+
+AMAZON_EMOTION
+  = "excited" / "disappointed"
+
+AMAZON_INTENSITY
+  = "low" / "medium" / "high"
 
 IBMExpressiveness
   = "[[" _ ("ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
