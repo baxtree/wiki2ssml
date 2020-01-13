@@ -56,19 +56,34 @@
     /* eslint-disable */
 }
 BEGIN
-  = text_and_statement:TextAndStatement* text:Text
+  = text_and_statement:TextAndStatements* text:Text
     {
       return text_and_statement.join("") + text;
     }
 
-TextAndStatement
+TextAndStatements
+  = TextParallelStatements / TextSequentialStatements / TextStatement
+
+TextParallelStatements
+  = text:Text statements:ParallelStatements
+    {
+      return text + statements;
+    }
+
+TextSequentialStatements
+  = text:Text statements:SequentialStatements
+    {
+      return text + statements;
+    }
+
+TextStatement
   = text:Text statement:Statement
     {
       return text + statement;
     }
 
 Text
-  = text:(!("[[" / "]]") .)*
+  = text:(!("[[" / "]]" / "*[[" / "]]*" / "#[[" / "]]#") .)*
     {
       return toText(text);
     }
@@ -79,14 +94,26 @@ Target
       return text_left + statement + text_right;
     }
 
+ParallelStatements
+  = "*" statements:Statement+ "*"
+    {
+      return "<par>" + statements.join("") + "</par>";
+    }
+
+SequentialStatements
+  = "#" statements:Statement+ "#"
+    {
+      return "<seq>" + statements.join("") + "</seq>";
+    }
+
 Statement
-  = Prosody 
-    / Emphasis 
-    / Silence 
-    / Substitute 
-    / Audio 
-    / Lang 
-    / Paragraph 
+  = Prosody
+    / Emphasis
+    / Silence
+    / Substitute
+    / Audio
+    / Lang
+    / Paragraph
     / Sentence
     / Phoneme
     / Type
@@ -232,7 +259,7 @@ Substitute
     }
 
 Audio
-  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!"]]" .)* "]]"
+  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!"]]" .)+ "]]"
     {
       return '<audio src="' + toText(uri) + '"/>'
     }
@@ -353,7 +380,7 @@ Mark
     }
 
 SeeAlso
-  = "[[" _ ("seeAlso"i / "see"i) _ ":" uri:(!"]]" .)* "]]"
+  = "[[" _ ("seeAlso"i / "see"i) _ ":" uri:(!"]]" .)+ "]]"
     {
       return '<meta name="seeAlso" content="' + toText(uri) + '"/>'
     }
@@ -374,7 +401,7 @@ LEVEL
   = "strong" / "moderate" / "none" / "reduced"
 
 TIME
-  = [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+  = [0-9]+(.[0-9]+)?"h" / [0-9]+(.[0-9]+)?"min"/ [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
 
 RATE
   = "x-slow" / "slow" / "medium" / "fast" / "x-fast" / "default" / NON_NEGATIVE_PERCENTAGE
@@ -401,7 +428,9 @@ NON_NEGATIVE_PERCENTAGE
   = [0-9]+"%"
 
 VendorExtension
-  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression / AmazonBreath / AmazonAutoBreaths
+  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression
+    / AmazonBreath / AmazonAutoBreaths / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
+    / GoogleMediaContainer
     / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
 
 AmazonWhispered
@@ -569,6 +598,24 @@ AmazonDefaultAutoBreaths
       return '<amazon:auto-breaths>' + target + '</amazon:auto-breaths>';
     }
 
+AmazonSpeakingStyle
+  = "[[" _ ("amzSpeakingStyle"i / "ass"i) _ ":" _ style:AMAZON_STYLE _ "|" target:Target "]]"
+    {
+      return '<amazon:domain name="' + style + '">' + target + '</amazon:domain>';
+    }
+
+AmazonEmotionIntensity
+  = "[[" _ ("amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "," _ ("amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "|" target:Target "]]"
+    {
+      return '<amazon:emotion name="' + emotion + '" ' + 'intensity="' + intensity + '">' + target + '</amazon:emotion>';
+    }
+
+AmazonIntensityEmotion
+  = "[[" _ ("amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "," _ ("amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "|" target:Target "]]"
+    {
+      return '<amazon:emotion intensity="' + intensity + '" ' + 'name="' + emotion + '">' + target + '</amazon:emotion>';
+    }
+
 AMAZON_VOLUME
   = "default" / "x-soft" / "soft" / "medium" / "loud" / "x-loud"
 
@@ -580,6 +627,86 @@ AMAZON_PHONATION
 
 AMAZON_DURATION
   = "x-short" / "short" / "medium" / "long" / "x-long" / "default"
+
+AMAZON_STYLE
+  = "music" / "news"
+
+AMAZON_EMOTION
+  = "excited" / "disappointed"
+
+AMAZON_INTENSITY
+  = "low" / "medium" / "high"
+
+GoogleMediaContainer
+  = GoolgeMediaSpeak / GoolgeMediaSpeakEnd / GoolgeMediaAudio
+    / GoolgeMediaSpeakFadeInFadeOut / GoolgeMediaSpeakFadeOutFadeIn
+    / GoolgeMediaAudioFadeInFadeOutMedia / GoolgeMediaAudioFadeOutFadeInMedia
+    / GoolgeMediaAudioMediaFadeInFadeOut / GoolgeMediaAudioMediaFadeOutFadeIn
+    / GoolgeMediaAudioFadeInMediaFadeOut / GoolgeMediaAudioFadeOutMediaFadeIn
+
+GoolgeMediaSpeak
+  = "[[" _ ("gglMediaSpeak"i / "gms"i) _ "|" target:Target "]]"
+    {
+      return '<media><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakEnd
+  = "[[" _ ("gglMediaSpeakEnd"i / "gmse"i) _ ":" _ time:TIME _ "|" target:Target "]]"
+    {
+      return '<media end="' + toTime(time) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakFadeInFadeOut
+  = "[[" _ ("gglMediaSpeakFadeIn"i / "gmsfi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaSpeakFadeOut"i / "gmsfo"i) _ ":" _ fade_out_Duration:TIME _ "|" target:Target "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakFadeOutFadeIn
+  = "[[" _ ("gglMediaSpeakFadeOut"i / "gmsfo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaSpeakFadeIn"i / "gmsfi"i) _ ":" _ fade_in_Duration:TIME _ "|" target:Target "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaAudio
+  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<media><audio src="' + toText(uri) + '"/></media>'
+    }
+GoolgeMediaAudioFadeInFadeOutMedia
+  = "[[" _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioFadeOutFadeInMedia
+  = "[[" _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+GoolgeMediaAudioMediaFadeInFadeOut
+  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioMediaFadeOutFadeIn
+  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioFadeInMediaFadeOut
+  = "[[" _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
+
+GoolgeMediaAudioFadeOutMediaFadeIn
+  = "[[" _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME "]]"
+    {
+      return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
+    }
 
 IBMExpressiveness
   = "[[" _ ("ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
