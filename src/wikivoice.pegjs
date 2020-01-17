@@ -53,6 +53,10 @@
     function toDetail(matches) {
         return matches.join("");
     }
+
+    function toDigits(matches) {
+        return matches.toString().split(",").join("");
+    }
     /* eslint-disable */
 }
 BEGIN
@@ -380,13 +384,13 @@ Mark
     }
 
 SeeAlso
-  = "[[" _ ("seeAlso"i / "see"i) _ ":" uri:(!"]]" .)+ "]]"
+  = "[[" _ ("see-also"i / "seeAlso"i / "see"i) _ ":" uri:(!"]]" .)+ "]]"
     {
       return '<meta name="seeAlso" content="' + toText(uri) + '"/>'
     }
 
 CacheControl
-  = "[[" _ ("cacheControl"i / "cac"i) _ ":" content:(!"]]" .)* "]]"
+  = "[[" _ ("cache-control" / "cacheControl"i / "cac"i) _ ":" content:(!"]]" .)* "]]"
     {
       return '<meta http-equiv="Cache-Control" content="' + toText(content) + '"/>'
     }
@@ -429,189 +433,190 @@ NON_NEGATIVE_PERCENTAGE
 
 VendorExtension
   = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression
-    / AmazonBreath / AmazonAutoBreaths / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
+    / AmazonBreathSound / AmazonAutoBreathSound / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
     / GoogleMediaContainer
     / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
+    / MicrosoftSpeakingStyle / MicrosoftBackground
 
 AmazonWhispered
-  = "[[" _ ("amzWhispered"i / "aw"i) _ "|" target:Target "]]"
+  = "[[" _ ("amz-whispered"i / "amz-whi"i / "amzWhispered"i / "aws"i) _ "|" target:Target "]]"
     {
       return '<amazon:effect name="whispered">' + target + '</amazon:effect>';
     }
 
 AmazonPhonation
-  = "[[" _ ("amzPhonation"i / "ap"i) _ ":" _ phonation:AMAZON_PHONATION _ "|" target:Target "]]"
+  = "[[" _ ("amz-phonation"i / "amz-pho"i / "amzPhonation"i / "aph"i) _ ":" _ phonation:AMAZON_PHONATION _ "|" target:Target "]]"
     {
       return '<amazon:effect phonation="' + phonation + '">' + target + '</amazon:effect>';
     }
 
 AmazonTimbre
-  = "[[" _ ("amzTimbre"i / "at"i) _ ":" _ timbre:PERCENTAGE _ "|" target:Target "]]"
+  = "[[" _ ("amz-timbre"i / "amz-tim"i / "amzTimbre"i / "ati"i) _ ":" _ timbre:PERCENTAGE _ "|" target:Target "]]"
     {
       return '<amazon:effect vocal-tract-length="' + toRate(timbre) + '">' + target + '</amazon:effect>';
     }
 
 AmazonDynamicRangeCompression
-  = "[[" _ ("amzDRC"i / "adrc"i) _ "|" target:Target "]]"
+  = "[[" _ ("amz-drc"i / "amzDRC"i / "adr"i) _ "|" target:Target "]]"
     {
       return '<amazon:effect name="drc">' + target + '</amazon:effect>';
     }
 
-AmazonBreath
+AmazonBreathSound
   = AmazonBreathDurationVolume / AmazonBreathVolumeDuration
     / AmazonBreathDuration / AmazonBreathVolume
-    / AmazonDefaultBreath
+    / AmazonBreath
 
 AmazonBreathDurationVolume
-  = "[[" _ ("amzBreathDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzBreathVolume"i / "abv"i) _ ":" _ volume:VOLUME _ "]]"
+  = "[[" _ ("amz-breath-duration"i / "amz-bre-dur"i / "amzBreathDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-breath-volume"i / "amz-bre-vol"i / "amzBreathVolume"i / "abv"i) _ ":" _ volume:VOLUME _ "]]"
     {
       return '<amazon:breath duration="' + duration + '" ' + 'volume="' + toVolume(volume) + '"/>';
     }
 
 AmazonBreathVolumeDuration
-  = "[[" _ ("amzBreathVolume"i / "abv"i) _ ":" _ volume:VOLUME _ "," _ ("amzBreathDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "]]"
+  = "[[" _ ("amz-breath-volume"i / "amz-bre-vol"i / "amzBreathVolume"i / "abv"i) _ ":" _ volume:VOLUME _ "," _ ("amz-breath-duration"i / "amz-bre-dur"i / "amzBreathDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "]]"
     {
       return '<amazon:breath duration="' + duration + '" ' + 'volume="' + toVolume(volume) + '"/>';
     }
 
 AmazonBreathDuration
-  = "[[" _ ("amzBreathDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "]]"
+  = "[[" _ ("amz-breath-duration"i / "amz-bre-dur"i / "amzBreathDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "]]"
     {
       return '<amazon:breath duration="' + duration + '"/>';
     }
 
 AmazonBreathVolume
-  = "[[" _ ("amzBreathVolume"i / "abv"i) _ ":" _ volume:VOLUME _ "]]"
+  = "[[" _ ("amz-breath-volume"i / "amz-bre-vol"i / "amzBreathVolume"i / "abv"i) _ ":" _ volume:VOLUME _ "]]"
     {
       return '<amazon:breath volume="' + toVolume(volume) + '"/>';
     }
 
-AmazonDefaultBreath
-  = "[[" _ ("amzDefaultBreath"i / "adb"i) _ "]]"
+AmazonBreath
+  = "[[" _ ("amz-default-breath"i / "amz-def-bre"i / "amzDefaultBreath"i / "adb"i) _ "]]"
     {
       return '<amazon:breath/>';
     }
 
-AmazonAutoBreaths
+AmazonAutoBreathSound
   = AmazonAutoBreathsVolumeFrequencyDuration / AmazonAutoBreathsVolumeDurationFrequency / AmazonAutoBreathsDurationFrequencyVolume
   / AmazonAutoBreathsDurationVolumeFrequency / AmazonAutoBreathsFrequencyDurationVolume / AmazonAutoBreathsFrequencyVolumeDuration
   / AmazonAutoBreathsVolumeDuration / AmazonAutoBreathsDurationVolume
   / AmazonAutoBreathsVolumeFrequency / AmazonAutoBreathsFrequencyVolume
   / AmazonAutoBreathsFrequencyDuration / AmazonAutoBreathsDurationFrequency
   / AmazonAutoBreathsVolume / AmazonAutoBreathsFrequency / AmazonAutoBreathsDuration
-  / AmazonDefaultAutoBreaths
+  / AmazonAutoBreaths
 
 AmazonAutoBreathsVolumeFrequencyDuration
-  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-volume"i / "amz-aut-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amz-auto-breaths-frequency"i / "amz-auto-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsVolumeDurationFrequency
-  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsDurationFrequencyVolume
-  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsDurationVolumeFrequency
-  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsFrequencyDurationVolume
-  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsFrequencyVolumeDuration
-  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsVolumeFrequency
-  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsFrequencyVolume
-  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'frequency="' + frequency + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsVolumeDuration
-  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "," _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsDurationVolume
-  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsFrequencyDuration
-  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "," _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 
 AmazonAutoBreathsDurationFrequency
-  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsVolume
-  = "[[" _ ("amzAutoBreathsVolume"i / "aabv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-volume"i / "amz-auto-bre-vol"i / "amzAutoBreathsVolume"i / "abv"i) _ ":" _ volume:AMAZON_VOLUME _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths volume="' + volume + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsFrequency
-  = "[[" _ ("amzAutoBreathsFrequency"i / "aabf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths frequency="' + frequency + '">' + target + '</amazon:auto-breaths>';
     }
 
 AmazonAutoBreathsDuration
-  = "[[" _ ("amzAutoBreathsDuration"i / "aabd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
+  = "[[" _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
-AmazonDefaultAutoBreaths
-  = "[[" _ ("amzDefaultAutoBreaths"i / "adab"i) _ "|" target:Target "]]"
+AmazonAutoBreaths
+  = "[[" _ ("amz-default-auto-breaths"i / "amz-aut-bre"i / "amzDefaultAutoBreaths"i / "adb"i) _ "|" target:Target "]]"
     {
       return '<amazon:auto-breaths>' + target + '</amazon:auto-breaths>';
     }
 
 AmazonSpeakingStyle
-  = "[[" _ ("amzSpeakingStyle"i / "ass"i) _ ":" _ style:AMAZON_STYLE _ "|" target:Target "]]"
+  = "[[" _ ("amz-speaking-style"i / "amz-spe-sty"i / "amzSpeakingStyle"i / "ass"i) _ ":" _ style:AMAZON_STYLE _ "|" target:Target "]]"
     {
       return '<amazon:domain name="' + style + '">' + target + '</amazon:domain>';
     }
 
 AmazonEmotionIntensity
-  = "[[" _ ("amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "," _ ("amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "|" target:Target "]]"
+  = "[[" _ ("amz-emotion"i / "amz-emo"i / "amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "," _ ("amz-intensity"i / "amz-int"i / "amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "|" target:Target "]]"
     {
       return '<amazon:emotion name="' + emotion + '" ' + 'intensity="' + intensity + '">' + target + '</amazon:emotion>';
     }
 
 AmazonIntensityEmotion
-  = "[[" _ ("amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "," _ ("amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "|" target:Target "]]"
+  = "[[" _ ("amz-intensity"i / "amz-int"i / "amzIntensity"i / "ain"i) _ ":" _ intensity:AMAZON_INTENSITY _ "," _ ("amz-emotion"i / "amz-emo"i / "amzEmotion"i / "aem"i) _ ":" _ emotion:AMAZON_EMOTION _ "|" target:Target "]]"
     {
       return '<amazon:emotion intensity="' + intensity + '" ' + 'name="' + emotion + '">' + target + '</amazon:emotion>';
     }
@@ -645,71 +650,71 @@ GoogleMediaContainer
     / GoolgeMediaAudioFadeInMediaFadeOut / GoolgeMediaAudioFadeOutMediaFadeIn
 
 GoolgeMediaSpeak
-  = "[[" _ ("gglMediaSpeak"i / "gms"i) _ "|" target:Target "]]"
+  = "[[" _ ("ggl-media-speak"i / "ggl-med-spe"i / "gglMediaSpeak"i / "gms"i) _ "|" target:Target "]]"
     {
       return '<media><speak>' + target + '</speak></media>';
     }
 
 GoolgeMediaSpeakEnd
-  = "[[" _ ("gglMediaSpeakEnd"i / "gmse"i) _ ":" _ time:TIME _ "|" target:Target "]]"
+  = "[[" _ ("ggl-media-speak-end"i / "ggl-med-spe-end"i / "gglMediaSpeakEnd"i / "gmse"i) _ ":" _ time:TIME _ "|" target:Target "]]"
     {
       return '<media end="' + toTime(time) + '"><speak>' + target + '</speak></media>';
     }
 
 GoolgeMediaSpeakFadeInFadeOut
-  = "[[" _ ("gglMediaSpeakFadeIn"i / "gmsfi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaSpeakFadeOut"i / "gmsfo"i) _ ":" _ fade_out_Duration:TIME _ "|" target:Target "]]"
+  = "[[" _ ("ggl-media-speak-fade-in"i / "ggl-medi-spe-fad-in"i / "gglMediaSpeakFadeIn"i / "gsi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("ggl-media-speak-fade-out"i / "ggl-med-spe-fad-out"i / "gglMediaSpeakFadeOut"i / "gso"i) _ ":" _ fade_out_Duration:TIME _ "|" target:Target "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><speak>' + target + '</speak></media>';
     }
 
 GoolgeMediaSpeakFadeOutFadeIn
-  = "[[" _ ("gglMediaSpeakFadeOut"i / "gmsfo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaSpeakFadeIn"i / "gmsfi"i) _ ":" _ fade_in_Duration:TIME _ "|" target:Target "]]"
+  = "[[" _ ("ggl-media-speak-fade-out"i / "ggl-med-spe-fad-out"i / "gglMediaSpeakFadeOut"i / "gso"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("ggl-media-speak-fade-in"i / "ggl-medi-spe-fad-in"i / "gglMediaSpeakFadeIn"i / "gsi"i) _ ":" _ fade_in_Duration:TIME _ "|" target:Target "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><speak>' + target + '</speak></media>';
     }
 
 GoolgeMediaAudio
-  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+  = "[[" _ ("ggl-media-audio"i / "ggl-med-aud"i / "gglMediaAudio"i / "gma"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
     {
       return '<media><audio src="' + toText(uri) + '"/></media>'
     }
 GoolgeMediaAudioFadeInFadeOutMedia
-  = "[[" _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
+  = "[[" _ ("ggl-media-audio-fade-in"i / "ggl-med-aud-fad-in"i / "gglMediaAudioFadeIn"i / "gfi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("ggl-media-audio-fade-out"i / "ggl-med-aud-fad-out"i / "gglMediaAudioFadeOut"i / "gfo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("ggl-media-audio"i / "ggl-med-aud"i / "gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
     }
 
 GoolgeMediaAudioFadeOutFadeInMedia
-  = "[[" _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
+  = "[[" _ ("ggl-media-audio-fade-out"i / "ggl-med-aud-fad-out"i / "gglMediaAudioFadeOut"i / "gfo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("ggl-media-audio-fade-in"i / "ggl-med-aud-fad-in"i / "gglMediaAudioFadeIn"i / "gfi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("ggl-media-audio"i / "ggl-med-aud"i / "gglMediaAudio"i / "gma"i) _ ":" uri:(!"]]" .)+ "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
     }
 GoolgeMediaAudioMediaFadeInFadeOut
-  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME "]]"
+  = "[[" _ ("ggl-media-audio"i / "ggl-med-aud"i / "gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("ggl-media-audio-fade-in"i / "ggl-med-aud-fad-in"i / "gglMediaAudioFadeIn"i / "gfi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("ggl-media-audio-fade-out"i / "ggl-med-aud-fad-out"i / "gglMediaAudioFadeOut"i / "gfo"i) _ ":" _ fade_out_Duration:TIME "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
     }
 
 GoolgeMediaAudioMediaFadeOutFadeIn
-  = "[[" _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME "]]"
+  = "[[" _ ("ggl-media-audio"i / "ggl-med-aud"i / "gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("ggl-media-audio-fade-out"i / "ggl-med-aud-fad-out"i / "gglMediaAudioFadeOut"i / "gfo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("ggl-media-audio-fade-in"i / "ggl-med-aud-fad-in"i / "gglMediaAudioFadeIn"i / "gfi"i) _ ":" _ fade_in_Duration:TIME "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
     }
 
 GoolgeMediaAudioFadeInMediaFadeOut
-  = "[[" _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME "]]"
+  = "[[" _ ("ggl-media-audio-fade-in"i / "ggl-med-aud-fad-in"i / "gglMediaAudioFadeIn"i / "gfi"i) _ ":" _ fade_in_Duration:TIME _ "," _ ("ggl-media-audio"i / "ggl-med-aud"i / "gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("ggl-media-audio-fade-out"i / "ggl-med-aud-fad-out"i / "gglMediaAudioFadeOut"i / "gfo"i) _ ":" _ fade_out_Duration:TIME "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
     }
 
 GoolgeMediaAudioFadeOutMediaFadeIn
-  = "[[" _ ("gglMediaAudioFadeOut"i / "gmafo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("gglMediaAudioFadeIn"i / "gmafi"i) _ ":" _ fade_in_Duration:TIME "]]"
+  = "[[" _ ("ggl-media-audio-fade-out"i / "ggl-med-aud-fad-out"i / "gglMediaAudioFadeOut"i / "gfo"i) _ ":" _ fade_out_Duration:TIME _ "," _ ("ggl-media-audio"i / "ggl-med-aud"i / "gglMediaAudio"i / "gma"i) _ ":" uri:(!"," .)+ _ "," _ ("ggl-media-audio-fade-in"i / "ggl-med-aud-fad-in"i / "gglMediaAudioFadeIn"i / "gfi"i) _ ":" _ fade_in_Duration:TIME "]]"
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
     }
 
 IBMExpressiveness
-  = "[[" _ ("ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-expr-type"i / "ibm-expr-typ"i / "ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
     {
       return '<express-as type="' + expressiveness + '">' + target + '</express-as>';
     }
@@ -718,19 +723,19 @@ IBMVoiceTransformation
   = IBMTransformationTypeStrength / IBMTransformationStrengthType / IBMTransformationType
 
 IBMTransformationTypeStrength
-  = "[[" _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "," _ ("ibmTransStrength"i / "its"i) _ ":" _ strength:PERCENTAGE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-type"i / "ibm-tra-typ"i / "ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "," _ ("ibm-trans-strength"i / "ibm-tra-stre"i / "ibmTransStrength"i / "its"i) _ ":" _ strength:PERCENTAGE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="' + type + '" strength="' + toRate(strength) + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationStrengthType
-  = "[[" _ ("ibmTransStrength"i / "its"i) _ ":" _ strength:PERCENTAGE _ "," _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-strength"i / "ibm-tra-stre"i / "ibmTransStrength"i / "its"i) _ ":" _ strength:PERCENTAGE _ "," _ ("ibm-trans-type"i / "ibm-tra-typ"i / "ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="' + type + '" strength="' + toRate(strength) + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationType
-  = "[[" _ ("ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-type"i / "ibm-tra-typ"i / "ibmTransType"i / "itt"i) _ ":" _ type:IBM_TRANSTYPE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="' + type + '">' + target + '</voice-transformation>';
     }
@@ -748,91 +753,91 @@ IBMVoiceCustomTransformation
     / IBMTransformationBreathiness / IBMTransformationPitchRange / IBMTransformationTimbre
 
 IBMTransformationBreathinessPitchRangeTimbre
-  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationBreathinessTimbrePitchRange
-  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationPitchRangeTimbreBreathiness
-  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationPitchRangeBreathinessTimbre
-  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationTimbreBreathinessPitchRange
-  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationTimbrePitchRangeBreathiness
-  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationBreathinessPitchRange
-  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationPitchRangeBreathiness
-  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibm-trans-breathiness"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'pitch_range="' + pitch_range + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationPitchRangeTimbre
-  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "," _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationTimbrePitchRange
-  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" pitch_range="' + pitch_range + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationTimbreBreathiness
-  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "," _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationBreathinessTimbre
-  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "," _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '" ' + 'timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationBreathiness
-  = "[[" _ ("ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-breathiness"i / "ibm-tra-bre"i / "ibmTransBreathiness"i / "itb"i) _ ":" _ breathiness:IBM_BREATHINESS _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" breathiness="' + breathiness + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationPitchRange
-  = "[[" _ ("ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-pitch-range"i / "ibm-tra-pit-ran"i / "ibmTransPitchRange"i / "itp"i) _ ":" _ pitch_range:IBM_PITCH_RANGE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" pitch_range="' + pitch_range + '">' + target + '</voice-transformation>';
     }
 
 IBMTransformationTimbre
-  = "[[" _ ("ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
+  = "[[" _ ("ibm-trans-timbre"i / "ibm-tra-tim"i / "ibmTransTimbre"i / "itm"i) _ ":" _ timbre:IBM_TIMBRE _ "|" target:Target "]]"
     {
       return '<voice-transformation type="Custom" timbre="' + timbre + '">' + target + '</voice-transformation>';
     }
@@ -851,3 +856,102 @@ IBM_TRANSTYPE
 
 IBM_EXPRTYPE
   = "GoodNews" / "Apology" / "Uncertainty"
+
+MicrosoftBackground
+  = MicrosoftBackgroundAudio
+    / MicrosoftBackgroundAudioVolume / MicrosoftBackgroundVolumeAudio
+    / MicrosoftBackgroundAudioFadeIn / MicrosoftBackgroundFadeInAudio
+    / MicrosoftBackgroundAudioFadeOut / MicrosoftBackgroundFadeOutAudio
+    / MicrosoftBackgroundAudioFadeInFadeOut / MicrosoftBackgroundAudioFadeOutFadeIn
+    / MicrosoftBackgroundFadeInAudioFadeOut / MicrosoftBackgroundFadeInFadeOutAudio
+    / MicrosoftBackgroundFadeOutAudioFadeIn / MicrosoftBackgroundFadeOutFadeInAudio
+
+MicrosoftSpeakingStyle
+  = "[[" _ ("mst-expr-type"i / "mst-exp-typ"i / "mstExprType"i / "met"i) _ ":" _ expressiveness:(!"|" .)+ _ "|" target:Target "]]"
+    {
+      return '<mstts:express-as type="' + toText(expressiveness) + '">' + target + '</mstts:express-as>';
+    }
+
+MicrosoftBackgroundAudio
+  = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '"/>'
+    }
+
+MicrosoftBackgroundAudioVolume
+  = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-volume"i / "mst-bg-aud-vol"i / "mstBackgroundAudioVolume"i / "mbv"i) _ ":" _ volume:MICROSOFT_VOLUME "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" volume="' + toDigits(volume) + '"/>'
+    }
+
+MicrosoftBackgroundVolumeAudio
+  = "[[" _ ("mst-background-audio-volume"i / "mst-bg-aud-vol"i / "mstBackgroundAudioVolume"i / "mbv"i) _ ":" _ volume:MICROSOFT_VOLUME _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" volume="' + toDigits(volume) + '"/>'
+    }
+
+MicrosoftBackgroundAudioFadeIn
+  = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_millis) + '"/>'
+    }
+
+MicrosoftBackgroundFadeInAudio
+  = "[[" _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_millis) + '"/>'
+    }
+
+MicrosoftBackgroundAudioFadeOut
+  = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadeout="' + toDigits(fade_millis) + '"/>'
+    }
+
+MicrosoftBackgroundFadeOutAudio
+  = "[[" _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadeout="' + toDigits(fade_millis) + '"/>'
+    }
+
+MicrosoftBackgroundAudioFadeInFadeOut
+  = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+    }
+
+MicrosoftBackgroundAudioFadeOutFadeIn
+  = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+    }
+
+MicrosoftBackgroundFadeInAudioFadeOut
+  = "[[" _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+    }
+
+MicrosoftBackgroundFadeInFadeOutAudio
+  = "[[" _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+    }
+
+MicrosoftBackgroundFadeOutAudioFadeIn
+  = "[[" _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+    }
+
+MicrosoftBackgroundFadeOutFadeInAudio
+  = "[[" _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
+    {
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+    }
+
+MICROSOFT_VOLUME
+  = [1][0][0] / [1-9][0-9] / [0-9]
+
+MICROSOFT_FADE_DURATION
+  = [1][0][0][0][0] / [1-9][0-9][0-9][0-9] / [1-9][0-9][0-9] / [1-9][0-9] / [0-9]

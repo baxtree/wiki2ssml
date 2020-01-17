@@ -4,8 +4,11 @@ var peg = require("pegjs");
 var fs = require("fs");
 var prettifyXml = require("prettify-xml");
 
-module.exports = (() => {
+const _EXTNS = {
+    "mstts": "http://www.w3.org/2001/mstts"
+};
 
+module.exports = (() => {
     try {
         var _parser = peg.generate(fs.readFileSync(__dirname + "/wikivoice.pegjs").toString());
     }
@@ -15,9 +18,10 @@ module.exports = (() => {
 
     var _getSsmlHead = (language, version) => {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><speak version=\"" + version + "\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
-              "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-              "xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" " +
-              "xml:lang=\"" + language + "\">";
+            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+            "xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" " +
+            "{{EXTNS_PLACEHOLDER}}" +
+            "xml:lang=\"" + language + "\">";
     };
 
     var _getSsmlTail = () => {
@@ -25,7 +29,13 @@ module.exports = (() => {
     };
 
     var _getSsmlAsString = (ssmlBody, language, options) => {
-        var ssml = _getSsmlHead(language, options.version) + ssmlBody + _getSsmlTail();
+        var ext_ns = "";
+        for (var namespace in _EXTNS) {
+            if (ssmlBody.indexOf("<" + namespace + ":") > -1) {
+                ext_ns += "xmlns:" + namespace + "=\"" + _EXTNS[namespace] + "\" ";
+            }
+        }
+        var ssml = _getSsmlHead(language, options.version).replace("{{EXTNS_PLACEHOLDER}}", ext_ns) + ssmlBody + _getSsmlTail();
         if (options.pretty) {
             return prettifyXml(ssml, {indent: 2, newline: "\n"});
         }
@@ -80,7 +90,6 @@ module.exports = (() => {
     }    
 
     return {
-
         parseToSsml: _parseToSsml,
 
         reloadGrammar: (grammar) => {
