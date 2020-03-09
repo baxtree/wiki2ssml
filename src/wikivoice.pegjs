@@ -54,7 +54,7 @@
         return matches.join("");
     }
 
-    function toDigits(matches) {
+    function toFlattened(matches) {
         return matches.toString().split(",").join("");
     }
     /* eslint-disable */
@@ -126,6 +126,7 @@ Statement
     / Mark
     / SeeAlso
     / CacheControl
+    / Lexicon
     / VendorExtension
 
 Prosody
@@ -395,6 +396,27 @@ CacheControl
       return '<meta http-equiv="Cache-Control" content="' + toText(content) + '"/>'
     }
 
+Lexicon
+  =  LexiconUriMediaType / LexiconMediaTypeUri / LexiconUri
+
+LexiconUri
+  = "[[" _ ("lexicon"i / "lex"i) _ ":" uri:(!"]]" .)+ "]]"
+    {
+      return '<lexicon uri="' + toText(uri) + '"/>'
+    }
+
+LexiconUriMediaType
+  = "[[" _ ("lexicon"i / "lex"i) _ ":" _ uri:(!"," .)+ _ "," _ ("type"i / "typ"i) _ ":" _ type:(!"]]" .)+ "]]"
+    {
+      return '<lexicon uri="' + toText(uri) + '" type="' + toText(type) + '"/>'
+    }
+
+LexiconMediaTypeUri
+  = "[[" _ ("type"i / "typ"i) _ ":" _ type:(!"," .)+ _ "," _ ("lexicon"i / "lex"i) _ ":" _ uri:(!"]]" .)+ "]]"
+  {
+    return '<lexicon uri="' + toText(uri) + '" type="' + toText(type) + '"/>'
+  }
+
 _ "optional whitespace"
   = [ \t\n\r]*
 
@@ -432,7 +454,7 @@ NON_NEGATIVE_PERCENTAGE
   = [0-9]+"%"
 
 VendorExtension
-  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression
+  = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression / AmazonMaxDuration
     / AmazonBreathSound / AmazonAutoBreathSound / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
     / GoogleMediaContainer
     / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
@@ -460,6 +482,12 @@ AmazonDynamicRangeCompression
   = "[[" _ ("amz-drc"i / "amzDRC"i / "adr"i) _ "|" target:Target "]]"
     {
       return '<amazon:effect name="drc">' + target + '</amazon:effect>';
+    }
+
+AmazonMaxDuration
+  = "[[" _ ("amz-max-duration"i / "amz-max-dur"i / "amzMaxDuration"i / "amd"i) _ ":" _ duration:AMAZON_MAX_DURATION _"|" target:Target "]]"
+    {
+      return '<prosody amazon:max-duration="' + toTime(duration) + '">' + target + '</prosody>';
     }
 
 AmazonBreathSound
@@ -572,7 +600,6 @@ AmazonAutoBreathsFrequencyDuration
       return '<amazon:auto-breaths frequency="' + frequency + '" ' + 'duration="' + duration + '">' + target + '</amazon:auto-breaths>';
     }
 
-
 AmazonAutoBreathsDurationFrequency
   = "[[" _ ("amz-auto-breaths-duration"i / "amz-aut-bre-dur"i / "amzAutoBreathsDuration"i / "abd"i) _ ":" _ duration:AMAZON_DURATION _ "," _ ("amz-auto-breaths-frequency"i / "amz-aut-bre-fre"i / "amzAutoBreathsFrequency"i / "abf"i) _ ":" _ frequency:AMAZON_FREQUENCY _ "|" target:Target "]]"
     {
@@ -634,7 +661,7 @@ AMAZON_DURATION
   = "x-short" / "short" / "medium" / "long" / "x-long" / "default"
 
 AMAZON_STYLE
-  = "music" / "news"
+  = "music" / "news" / "conversational"
 
 AMAZON_EMOTION
   = "excited" / "disappointed"
@@ -642,8 +669,12 @@ AMAZON_EMOTION
 AMAZON_INTENSITY
   = "low" / "medium" / "high"
 
+AMAZON_MAX_DURATION
+  = [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+
 GoogleMediaContainer
-  = GoolgeMediaSpeak / GoolgeMediaSpeakEnd / GoolgeMediaAudio
+  = GoolgeMediaSpeak / GoolgeMediaSpeakBegin / GoolgeMediaSpeakEnd / GoolgeMediaSpeakBeginEnd / GoolgeMediaSpeakEndBegin
+    / GoolgeMediaAudio
     / GoolgeMediaSpeakFadeInFadeOut / GoolgeMediaSpeakFadeOutFadeIn
     / GoolgeMediaAudioFadeInFadeOutMedia / GoolgeMediaAudioFadeOutFadeInMedia
     / GoolgeMediaAudioMediaFadeInFadeOut / GoolgeMediaAudioMediaFadeOutFadeIn
@@ -654,11 +685,28 @@ GoolgeMediaSpeak
     {
       return '<media><speak>' + target + '</speak></media>';
     }
+GoolgeMediaSpeakBegin
+  = "[[" _ ("ggl-media-speak-begin"i / "ggl-med-spe-begin"i / "gglMediaSpeakBegin"i / "gmsb"i) _ ":" _ time:GoogleTime _ "|" target:Target "]]"
+    {
+      return '<media begin="' + toFlattened(time) + '"><speak>' + target + '</speak></media>';
+    }
 
 GoolgeMediaSpeakEnd
-  = "[[" _ ("ggl-media-speak-end"i / "ggl-med-spe-end"i / "gglMediaSpeakEnd"i / "gmse"i) _ ":" _ time:TIME _ "|" target:Target "]]"
+  = "[[" _ ("ggl-media-speak-end"i / "ggl-med-spe-end"i / "gglMediaSpeakEnd"i / "gmse"i) _ ":" _ time:GoogleTime _ "|" target:Target "]]"
     {
-      return '<media end="' + toTime(time) + '"><speak>' + target + '</speak></media>';
+      return '<media end="' + toFlattened(time) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakBeginEnd
+  = "[[" _ ("ggl-media-speak-begin"i / "ggl-med-spe-begin"i / "gglMediaSpeakBegin"i / "gmsb"i) _ ":" _ begin:GoogleTime _ "," _ ("ggl-media-speak-end"i / "ggl-med-spe-end"i / "gglMediaSpeakEnd"i / "gmse"i) _ ":" _ end:GoogleTime _ "|" target:Target "]]"
+    {
+      return '<media begin="' + toFlattened(begin) + '" end="' + toFlattened(end) + '"><speak>' + target + '</speak></media>';
+    }
+
+GoolgeMediaSpeakEndBegin
+  = "[[" _ ("ggl-media-speak-end"i / "ggl-med-spe-end"i / "gglMediaSpeakEnd"i / "gmse"i) _ ":" _ end:GoogleTime _ "," _ ("ggl-media-speak-begin"i / "ggl-med-spe-begin"i / "gglMediaSpeakBegin"i / "gmsb"i) _ ":" _ begin:GoogleTime _ "|" target:Target "]]"
+    {
+      return '<media begin="' + toFlattened(begin) + '" end="' + toFlattened(end) + '"><speak>' + target + '</speak></media>';
     }
 
 GoolgeMediaSpeakFadeInFadeOut
@@ -712,6 +760,9 @@ GoolgeMediaAudioFadeOutMediaFadeIn
     {
       return '<media fadeInDur="' + toTime(fade_in_Duration) + '" fadeOutDur="' + toTime(fade_out_Duration) + '"><audio src="' + toText(uri) + '"/></media>'
     }
+
+GoogleTime
+  = _ [+|-]? _ TIME / (!"." .)+."begin" _ [+|-]? _ TIME / (!"." .)+."end" _ [+|-]? _ TIME
 
 IBMExpressiveness
   = "[[" _ ("ibm-expr-type"i / "ibm-expr-typ"i / "ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
@@ -881,73 +932,73 @@ MicrosoftBackgroundAudio
 MicrosoftBackgroundAudioVolume
   = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-volume"i / "mst-bg-aud-vol"i / "mstBackgroundAudioVolume"i / "mbv"i) _ ":" _ volume:MICROSOFT_VOLUME "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" volume="' + toDigits(volume) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" volume="' + toFlattened(volume) + '"/>'
     }
 
 MicrosoftBackgroundVolumeAudio
   = "[[" _ ("mst-background-audio-volume"i / "mst-bg-aud-vol"i / "mstBackgroundAudioVolume"i / "mbv"i) _ ":" _ volume:MICROSOFT_VOLUME _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" volume="' + toDigits(volume) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" volume="' + toFlattened(volume) + '"/>'
     }
 
 MicrosoftBackgroundAudioFadeIn
   = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_millis) + '"/>'
     }
 
 MicrosoftBackgroundFadeInAudio
   = "[[" _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_millis) + '"/>'
     }
 
 MicrosoftBackgroundAudioFadeOut
   = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadeout="' + toDigits(fade_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadeout="' + toFlattened(fade_millis) + '"/>'
     }
 
 MicrosoftBackgroundFadeOutAudio
   = "[[" _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadeout="' + toDigits(fade_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadeout="' + toFlattened(fade_millis) + '"/>'
     }
 
 MicrosoftBackgroundAudioFadeInFadeOut
   = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_in_millis) + '" fadeout="' + toFlattened(fade_out_millis) + '"/>'
     }
 
 MicrosoftBackgroundAudioFadeOutFadeIn
   = "[[" _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_in_millis) + '" fadeout="' + toFlattened(fade_out_millis) + '"/>'
     }
 
 MicrosoftBackgroundFadeInAudioFadeOut
   = "[[" _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_in_millis) + '" fadeout="' + toFlattened(fade_out_millis) + '"/>'
     }
 
 MicrosoftBackgroundFadeInFadeOutAudio
   = "[[" _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_in_millis) + '" fadeout="' + toFlattened(fade_out_millis) + '"/>'
     }
 
 MicrosoftBackgroundFadeOutAudioFadeIn
   = "[[" _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mst-bg-aud"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!"," .)+ _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_in_millis) + '" fadeout="' + toFlattened(fade_out_millis) + '"/>'
     }
 
 MicrosoftBackgroundFadeOutFadeInAudio
   = "[[" _ ("mst-background-audio-fade-out"i / "mst-bg-aud-fad-out"i / "mstBackgroundAudioFadeOut"i / "mfo"i) _ ":" _ fade_out_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio-fade-in"i / "mst-bg-aud-fad-in"i / "mstBackgroundAudioFadeIn"i / "mfi"i) _ ":" _ fade_in_millis:MICROSOFT_FADE_DURATION _ "," _ ("mst-background-audio"i / "mstBackgroundAudio"i / "mba"i) _ ":" uri:(!("]]" / ",") .)+ "]]"
     {
-      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toDigits(fade_in_millis) + '" fadeout="' + toDigits(fade_out_millis) + '"/>'
+      return '<mstts:backgroundaudio src="' + toText(uri) + '" fadein="' + toFlattened(fade_in_millis) + '" fadeout="' + toFlattened(fade_out_millis) + '"/>'
     }
 
 MICROSOFT_VOLUME

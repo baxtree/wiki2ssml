@@ -1,12 +1,12 @@
 {
   "name": "wiki2ssml",
-  "version": "0.2.9",
+  "version": "0.2.11",
   "description": "Wiki2SSML provides the WikiVoice markup language used for fine-tuning synthesised voice.",
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/eslint/bin/eslint.js ./src/wiki2ssml.js ./test/wiki2ssml-test.js",
-    "test": "./node_modules/mocha/bin/mocha ./test",
+    "test": "./node_modules/mocha/bin/mocha ./test/*-test.js",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
     "codecov": "./node_modules/.bin/codecov"
   },
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "codecov": "^3.6.1",
+    "codecov": "^3.6.5",
     "eslint": "^5.12.1",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
