@@ -47,6 +47,7 @@ $ yarn add wiki2ssml
 | [[mark:NAME]] | Mark referencing a location |
 | [[seeAlso:URI] | URI providing additional information about marked-up content]
 | [[cacheControl:no-cache]] | No caching on marked-up content |
+| [[lexicon:URI,type:TEXT]] | Location of the lexicon document and its media type |
 | &#42;[[...]][[...]]...[[...]]&#42; | &#60;par&#62; time container with one or more markups|
 | &#35;[[...]][[...]]...[[...]]&#35; | &#60;seq&#62; time container with one or more markups|
 
@@ -63,6 +64,7 @@ $ yarn add wiki2ssml
 | [[amzDefaultAutoBreaths]] | Default breathing based on the automated model |
 | [[amzSpeakingStyle:STYLE&#124;TEXT]] | Speaking style |
 | [[amzEmotion:EMOTION,amzIntensity:SCALE&#124;TEXT]] | Speaking emotionally |
+| [[amzMaxDuration:DURATION#124;TEXT]] | Maximum Speech duration |
 | [[gglMediaSpeak&#124;TEXT]] | Media container for speech |
 | [[gglMediaSpeakEnd:DURATION&#124;TEXT]] | Media container for speech with the ending time |
 | [[gglMediaSpeakFadeIn:DURATION,gglMediaSpeakFadeOut:DURATION&#124;TEXT]] | Media container for speach with fade |
