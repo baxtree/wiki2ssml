@@ -85,6 +85,7 @@ More details on canonical attribute values can be found at [Speech Synthesis Mar
 - options `<object>` (optional)
   - version `<string>` (default: "1.1")
   - pretty `<boolean>` (default: false)
+  - encoding `<string>` (default: "UTF-8")
 
 # Example
 ```js

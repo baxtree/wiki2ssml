@@ -16,8 +16,10 @@ module.exports = (() => {
         throw new SyntaxError(e.message);
     }
 
-    var _getSsmlHead = (language, version) => {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><speak version=\"" + version + "\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
+    var _getSsmlHead = (language, version, encoding) => {
+        return "<?xml version=\"1.0\" encoding=\"" + encoding + "\"?>" +
+            (version === "1.0" ? "<!DOCTYPE speak PUBLIC \"-//W3C//DTD SYNTHESIS 1.0//EN\" \"http://www.w3.org/TR/speech-synthesis/synthesis.dtd\">" : "") +
+            "<speak version=\"" + version + "\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
             "xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" " +
             "{{EXTNS_PLACEHOLDER}}" +
@@ -35,7 +37,7 @@ module.exports = (() => {
                 ext_ns += "xmlns:" + namespace + "=\"" + _EXTNS[namespace] + "\" ";
             }
         }
-        var ssml = _getSsmlHead(language, options.version).replace("{{EXTNS_PLACEHOLDER}}", ext_ns) + ssmlBody + _getSsmlTail();
+        var ssml = _getSsmlHead(language, options.version, options.encoding).replace("{{EXTNS_PLACEHOLDER}}", ext_ns) + ssmlBody + _getSsmlTail();
         if (options.pretty) {
             return prettifyXml(ssml, {indent: 2, newline: "\n"});
         }
@@ -55,6 +57,9 @@ module.exports = (() => {
         }
         if (typeof(options.pretty) === "undefined") {
             options.pretty = false;
+        }
+        if (typeof(options.encoding) === "undefined") {
+            options.encoding = "UTF-8";
         }
         try {
             var parsed = _parser.parse(input);
