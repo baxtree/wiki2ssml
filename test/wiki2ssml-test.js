@@ -433,7 +433,7 @@ describe("Test wiki2ssml", () => {
             ];
 
             happy.forEach((test) => {
-                var parsed = undertest.parseToSsml(test.expression, "en-GB");
+                var parsed = undertest.parseToSsml(test.expression, "en-GB", {version: "1.0"});
                 expect(parsed).to.be.have.string("<speak ");
                 expect(parsed).to.equal(test.expected);
                 xml2js.parseString(parsed, (err) => { expect(err).to.be.null; });
@@ -442,7 +442,7 @@ describe("Test wiki2ssml", () => {
 
         it("should escape control characters", () => {
             undertest = require("../src/wiki2ssml");
-            var parsed = undertest.parseToSsml("[[volume:+6dB|\"a\" + 'b' & c <> d]]", "en-GB");
+            var parsed = undertest.parseToSsml("[[volume:+6dB|\"a\" + 'b' & c <> d]]", "en-GB", {version: "1.0"});
             expect(parsed).to.be.a("string");
             expect(parsed).to.equal(helper.HEAD + "<prosody volume=\"+6dB\">&quot;a&quot; + &apos;b&apos; &amp; c &lt;&gt; d</prosody>" + helper.TAIL);
         });
@@ -450,7 +450,7 @@ describe("Test wiki2ssml", () => {
         it("should output the original input which dose not have markups in SSML", () => {
             undertest = require("../src/wiki2ssml");
             var textWithoutMarkup = "This is a test without markups";
-            var parsed = undertest.parseToSsml(textWithoutMarkup, "en-GB");
+            var parsed = undertest.parseToSsml(textWithoutMarkup, "en-GB", {version: "1.0"});
             expect(parsed).to.be.a("string");
             expect(parsed).to.equal(helper.HEAD + textWithoutMarkup + helper.TAIL);
         });
@@ -464,8 +464,31 @@ describe("Test wiki2ssml", () => {
 
         it("should prettify SSML when configured", () => {
             undertest = require("../src/wiki2ssml");
+            var parsed = undertest.parseToSsml("[[volume:+6dB|TEXT]]", "en-GB", {version: "1.0", pretty: true});
+            var expected = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                "<!DOCTYPE speak PUBLIC \"-//W3C//DTD SYNTHESIS 1.0//EN\" \"http://www.w3.org/TR/speech-synthesis/synthesis.dtd\">",
+                "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"en-GB\">",
+                "  <prosody volume=\"+6dB\">TEXT</prosody>",
+                "</speak>"].join("\n");
+            expect(parsed).to.be.a("string");
+            expect(parsed).to.equal(expected);
+        });
+
+        it("should use SSML 1.1 by default", () => {
+            undertest = require("../src/wiki2ssml");
             var parsed = undertest.parseToSsml("[[volume:+6dB|TEXT]]", "en-GB", {pretty: true});
             var expected = ["<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                "<speak version=\"1.1\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"en-GB\">",
+                "  <prosody volume=\"+6dB\">TEXT</prosody>",
+                "</speak>"].join("\n");
+            expect(parsed).to.be.a("string");
+            expect(parsed).to.equal(expected);
+        });
+
+        it("should use the customised encoding", () => {
+            undertest = require("../src/wiki2ssml");
+            var parsed = undertest.parseToSsml("[[volume:+6dB|TEXT]]", "en-GB", {pretty: true, encoding: "UTF-16"});
+            var expected = ["<?xml version=\"1.0\" encoding=\"UTF-16\"?>",
                 "<speak version=\"1.1\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" xml:lang=\"en-GB\">",
                 "  <prosody volume=\"+6dB\">TEXT</prosody>",
                 "</speak>"].join("\n");
@@ -507,7 +530,7 @@ describe("Test wiki2ssml", () => {
                 ].forEach((test) => {
                     it((test.input == "" ? "empty" : test.input) + " input", () => {
                         try {
-                            undertest.parseToSsml(test.input, "en-GB");
+                            undertest.parseToSsml(test.input, "en-GB", {version: "1.0"});
                             expect.fail();
                         } catch (e) {
                             expect(e instanceof test.expected).to.be.true;
@@ -520,7 +543,7 @@ describe("Test wiki2ssml", () => {
             it("should throw ArgumentError on null input", () => {
                 undertest = require("../src/wiki2ssml");
                 try {
-                    undertest.parseToSsml(null, "en-GB");
+                    undertest.parseToSsml(null, "en-GB", {version: "1.0"});
                     expect.fail();
                 } catch (e) {
                     expect(e instanceof undertest.ArgumentError).to.be.true;
@@ -531,7 +554,7 @@ describe("Test wiki2ssml", () => {
             it("should throw ArgumentError on undefined input", () => {
                 undertest = require("../src/wiki2ssml");
                 try {
-                    undertest.parseToSsml(undefined, "en-GB");
+                    undertest.parseToSsml(undefined, "en-GB", {version: "1.0"});
                     expect.fail();
                 } catch (e) {
                     expect(e instanceof undertest.ArgumentError).to.be.true;
@@ -542,7 +565,7 @@ describe("Test wiki2ssml", () => {
             it("should throw ArgumentError on empty input", () => {
                 undertest = require("../src/wiki2ssml");
                 try {
-                    undertest.parseToSsml("", "en-GB");
+                    undertest.parseToSsml("", "en-GB", {version: "1.0"});
                     expect.fail();
                 } catch (e) {
                     expect(e instanceof undertest.ArgumentError).to.be.true;
