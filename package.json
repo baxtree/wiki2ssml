@@ -40,9 +40,9 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "codecov": "^3.6.5",
-    "eslint": "^5.12.1",
+    "eslint": "^5.16.0",
     "istanbul": "^0.4.5",
-    "mocha": "^5.2.0",
-    "xml2js": "^0.4.19"
+    "mocha": "^7.1.2",
+    "xml2js": "^0.4.23"
   }
 }
