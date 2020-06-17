@@ -17,9 +17,10 @@
     }
 
     function toTime(matches) {
-        var integral =  matches[0].join("");
-        var decimal = matches[1] == undefined ? "" : matches[1][0] + matches[1][1].join("")
-        var unit = matches[2];
+        var sign = matches[0] == null ? "" : matches[0];
+        var integral = matches[1].join("");
+        var decimal = matches[2] == undefined ? "" : matches[2][0] + matches[2][1].join("")
+        var unit = matches[3];
         return integral + decimal + unit;
     }
 
@@ -231,27 +232,27 @@ Emphasis
     }
 
 Silence
-  = TimeStrength / StrengthTime / Time / Strength
+  = SilenceTimeStrength / SilenceStrengthTime / SilenceTime / SilenceStrength
 
-TimeStrength
+SilenceTimeStrength
   = "[[" _ ("silence"i / "sil"i) _ ":" _ time:TIME _ "," _ ("strength"i / "str"i) _ ":" _ strength:STRENTH _ "]]"
     {
       return '<break strength="' + strength + '" time="' + toTime(time) + '"/>';
     }
 
-StrengthTime
+SilenceStrengthTime
   = "[[" _ ("strength"i / "str"i) _ ":" _ strength:STRENTH _ "," _ ("silence"i / "sil"i) _ ":" _ time:TIME _ "]]"
     {
       return '<break strength="' + strength + '" time="' + toTime(time) + '"/>';
     }
 
-Time
+SilenceTime
   = "[[" _ ("silence"i / "sil"i) _ ":" _ time:TIME _ "]]"
     {
       return '<break time="' + toTime(time) + '"/>';
     }
 
-Strength
+SilenceStrength
   = "[[" _ ("strength"i / "str"i) _ ":" _ strength:STRENTH _ "]]"
     {
       return '<break strength="' + strength + '"/>';
@@ -427,7 +428,7 @@ LEVEL
   = "strong" / "moderate" / "none" / "reduced"
 
 TIME
-  = [0-9]+(.[0-9]+)?"h" / [0-9]+(.[0-9]+)?"min"/ [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+  = [+|-]?[0-9]+(.[0-9]+)?"s" / [+|-]?[0-9]+(.[0-9]+)?"ms"
 
 RATE
   = "x-slow" / "slow" / "medium" / "fast" / "x-fast" / "default" / NON_NEGATIVE_PERCENTAGE
@@ -661,7 +662,7 @@ AMAZON_DURATION
   = "x-short" / "short" / "medium" / "long" / "x-long" / "default"
 
 AMAZON_STYLE
-  = "music" / "news" / "conversational"
+  = "music" / "news" / "conversational" / "long-form"
 
 AMAZON_EMOTION
   = "excited" / "disappointed"
@@ -670,7 +671,7 @@ AMAZON_INTENSITY
   = "low" / "medium" / "high"
 
 AMAZON_MAX_DURATION
-  = [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+  = [+]?[0-9]+(.[0-9]+)?"s" / [+]?[0-9]+(.[0-9]+)?"ms"
 
 GoogleMediaContainer
   = GoolgeMediaSpeak / GoolgeMediaSpeakBegin / GoolgeMediaSpeakEnd / GoolgeMediaSpeakBeginEnd / GoolgeMediaSpeakEndBegin
@@ -762,7 +763,10 @@ GoolgeMediaAudioFadeOutMediaFadeIn
     }
 
 GoogleTime
-  = _ [+|-]? _ TIME / (!"." .)+."begin" _ [+|-]? _ TIME / (!"." .)+."end" _ [+|-]? _ TIME
+  = GoogleTimeDesignation / (!"." .)+."begin" GoogleTimeDesignation / (!"." .)+."end" GoogleTimeDesignation
+
+GoogleTimeDesignation
+  = [+|-]?[0-9]+(.[0-9]+)?"h" / [+|-]?[0-9]+(.[0-9]+)?"min"/ TIME
 
 IBMExpressiveness
   = "[[" _ ("ibm-expr-type"i / "ibm-expr-typ"i / "ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
