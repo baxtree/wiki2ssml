@@ -188,7 +188,17 @@ describe("Test wiki2ssml", () => {
             undertest = require("../src/wiki2ssml");
             var happy = [
                 { expression: "[[audio:https://example.mp3]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\"/>" + helper.TAIL },
-                { expression: "[[aud:https://example.mp3]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\"/>" + helper.TAIL }
+                { expression: "[[aud:https://example.mp3]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\"/>" + helper.TAIL },
+                { expression: "[[audio:https://example.mp3,level:+6dB]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" soundLevel=\"+6dB\"/>" + helper.TAIL },
+                { expression: "[[aud:https://example.mp3,lev:+6dB]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" soundLevel=\"+6dB\"/>" + helper.TAIL },
+                { expression: "[[audio:https://example.mp3,begin:0.5s,end:5s]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" clipBegin=\"0.5s\" clipEnd=\"5s\"/>" + helper.TAIL },
+                { expression: "[[aud:https://example.mp3,end:5s,begin:0.5s]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" clipBegin=\"0.5s\" clipEnd=\"5s\"/>" + helper.TAIL },
+                { expression: "[[audio:https://example.mp3,begin:0.5s,end:5s,count:3]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" clipBegin=\"0.5s\" clipEnd=\"5s\" repeatCount=\"3\"/>" + helper.TAIL },
+                { expression: "[[aud:https://example.mp3,count:3,begin:0.5s,end:5s]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" clipBegin=\"0.5s\" clipEnd=\"5s\" repeatCount=\"3\"/>" + helper.TAIL },
+                { expression: "[[audio:https://example.mp3,begin:0.5s,end:5s,speed:100%]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" clipBegin=\"0.5s\" clipEnd=\"5s\" speed=\"100%\"/>" + helper.TAIL },
+                { expression: "[[aud:https://example.mp3,speed:100%,begin:0.5s,end:5s]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" clipBegin=\"0.5s\" clipEnd=\"5s\" speed=\"100%\"/>" + helper.TAIL },
+                { expression: "[[audio:https://example.mp3,duration:5s,count:3]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" repeatCount=\"3\" repeatDur=\"5s\"/>" + helper.TAIL },
+                { expression: "[[aud:https://example.mp3,count:3,duration:5s]]", expected: helper.HEAD + "<audio src=\"https://example.mp3\" repeatCount=\"3\" repeatDur=\"5s\"/>" + helper.TAIL }
             ];
 
             helper.runHappyTests(happy, undertest);

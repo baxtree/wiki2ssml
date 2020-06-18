@@ -265,9 +265,68 @@ Substitute
     }
 
 Audio
-  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!"]]" .)+ "]]"
+  = AudioSrc / AudioSoundLevel / AudioClipBeginEnd / AudioClipEndBegin
+    / AudioClipBeginEndRepeatCount / AudioClipRepeatCountBeginEnd
+    / AudioClipBeginEndSpeed / AudioClipSpeedBeginEnd
+    / AudioClipRepeatCountDuration / AudioClipRepeatDurationCount
+
+AudioSrc
+  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!("," / "]]") .)+ "]]"
     {
       return '<audio src="' + toText(uri) + '"/>'
+    }
+AudioSoundLevel
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("level"i / "lev"i) _ ":" _ sound_level:SOUND_LEVEL _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" soundLevel="' + toVolume(sound_level) + '"/>'
+    }
+
+AudioClipBeginEnd
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '"/>'
+    }
+
+AudioClipEndBegin
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '"/>'
+    }
+
+AudioClipBeginEndRepeatCount
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" repeatCount="' + toDetail(repeat_count) + '"/>'
+    }
+
+AudioClipRepeatCountBeginEnd
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" repeatCount="' + toDetail(repeat_count) + '"/>'
+    }
+
+AudioClipRepeatCountDuration
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "," _ ("duration"i / "dur"i) _ ":" _ duration:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" repeatCount="' + toDetail(repeat_count) + '" repeatDur="' + toTime(duration) + '"/>'
+    }
+
+AudioClipRepeatDurationCount
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("duration"i / "dur"i) _ ":" _ duration:TIME _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" repeatCount="' + toDetail(repeat_count) + '" repeatDur="' + toTime(duration) + '"/>'
+    }
+
+AudioClipBeginEndSpeed
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:NON_NEGATIVE_PERCENTAGE _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" speed="' + toRate(speed) + '"/>'
+    }
+
+AudioClipSpeedBeginEnd
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("speed"i / "spe"i) _ ":" _ speed:NON_NEGATIVE_PERCENTAGE _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" speed="' + toRate(speed) + '"/>'
     }
 
 Lang
@@ -437,7 +496,7 @@ PITCH
   = "x-low" / "low" / "medium" / "high" / "x-high" / "default" / PERCENTAGE / [\+\-0-9]+"Hz" / [\+\-0-9]+"st"
 
 VOLUME
-  = "silent" / "x-soft" / "soft" / "medium" / "loud" / "x-loud" / "default" / [\+\-0-9]+(.[0-9])*"dB"
+  = "silent" / "x-soft" / "soft" / "medium" / "loud" / "x-loud" / "default" / SOUND_LEVEL
 
 INTERPRET
   = "cardinal" / "number" / "ordinal" / "characters" / "digits" / "fraction" / "expletive" / "bleep" / "interjection" / "unit" / "verbatim" / "spell-out" / "date" / "time" / "telephone" / "address"
@@ -453,6 +512,12 @@ PERCENTAGE
 
 NON_NEGATIVE_PERCENTAGE
   = [0-9]+"%"
+
+COUNT
+  = [+]?[0-9]+(.[0-9]+)?
+
+SOUND_LEVEL
+  = [\+\-0-9]+(.[0-9])*"dB"
 
 VendorExtension
   = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression / AmazonMaxDuration
