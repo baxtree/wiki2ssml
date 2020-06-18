@@ -17,9 +17,10 @@
     }
 
     function toTime(matches) {
-        var integral =  matches[0].join("");
-        var decimal = matches[1] == undefined ? "" : matches[1][0] + matches[1][1].join("")
-        var unit = matches[2];
+        var sign = matches[0] == null ? "" : matches[0];
+        var integral = matches[1].join("");
+        var decimal = matches[2] == undefined ? "" : matches[2][0] + matches[2][1].join("")
+        var unit = matches[3];
         return integral + decimal + unit;
     }
 
@@ -231,27 +232,27 @@ Emphasis
     }
 
 Silence
-  = TimeStrength / StrengthTime / Time / Strength
+  = SilenceTimeStrength / SilenceStrengthTime / SilenceTime / SilenceStrength
 
-TimeStrength
+SilenceTimeStrength
   = "[[" _ ("silence"i / "sil"i) _ ":" _ time:TIME _ "," _ ("strength"i / "str"i) _ ":" _ strength:STRENTH _ "]]"
     {
       return '<break strength="' + strength + '" time="' + toTime(time) + '"/>';
     }
 
-StrengthTime
+SilenceStrengthTime
   = "[[" _ ("strength"i / "str"i) _ ":" _ strength:STRENTH _ "," _ ("silence"i / "sil"i) _ ":" _ time:TIME _ "]]"
     {
       return '<break strength="' + strength + '" time="' + toTime(time) + '"/>';
     }
 
-Time
+SilenceTime
   = "[[" _ ("silence"i / "sil"i) _ ":" _ time:TIME _ "]]"
     {
       return '<break time="' + toTime(time) + '"/>';
     }
 
-Strength
+SilenceStrength
   = "[[" _ ("strength"i / "str"i) _ ":" _ strength:STRENTH _ "]]"
     {
       return '<break strength="' + strength + '"/>';
@@ -264,9 +265,68 @@ Substitute
     }
 
 Audio
-  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!"]]" .)+ "]]"
+  = AudioSrc / AudioSoundLevel / AudioClipBeginEnd / AudioClipEndBegin
+    / AudioClipBeginEndRepeatCount / AudioClipRepeatCountBeginEnd
+    / AudioClipBeginEndSpeed / AudioClipSpeedBeginEnd
+    / AudioClipRepeatCountDuration / AudioClipRepeatDurationCount
+
+AudioSrc
+  = "[[" _ ("audio"i / "aud"i) _ ":" uri:(!("," / "]]") .)+ "]]"
     {
       return '<audio src="' + toText(uri) + '"/>'
+    }
+AudioSoundLevel
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("level"i / "lev"i) _ ":" _ sound_level:SOUND_LEVEL _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" soundLevel="' + toVolume(sound_level) + '"/>'
+    }
+
+AudioClipBeginEnd
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '"/>'
+    }
+
+AudioClipEndBegin
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '"/>'
+    }
+
+AudioClipBeginEndRepeatCount
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" repeatCount="' + toDetail(repeat_count) + '"/>'
+    }
+
+AudioClipRepeatCountBeginEnd
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" repeatCount="' + toDetail(repeat_count) + '"/>'
+    }
+
+AudioClipRepeatCountDuration
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "," _ ("duration"i / "dur"i) _ ":" _ duration:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" repeatCount="' + toDetail(repeat_count) + '" repeatDur="' + toTime(duration) + '"/>'
+    }
+
+AudioClipRepeatDurationCount
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("duration"i / "dur"i) _ ":" _ duration:TIME _ "," _ ("count"i / "cou"i) _ ":" _ repeat_count:COUNT _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" repeatCount="' + toDetail(repeat_count) + '" repeatDur="' + toTime(duration) + '"/>'
+    }
+
+AudioClipBeginEndSpeed
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "," _ ("speed"i / "spe"i) _ ":" _ speed:NON_NEGATIVE_PERCENTAGE _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" speed="' + toRate(speed) + '"/>'
+    }
+
+AudioClipSpeedBeginEnd
+  = "[[" _ ("audio"i / "aud"i) _ ":" _ uri:(!"," .)+ _ "," _ ("speed"i / "spe"i) _ ":" _ speed:NON_NEGATIVE_PERCENTAGE _ "," _ ("begin"i / "beg"i) _ ":" _ clip_begin:TIME _ "," _ ("end"i) _ ":" _ clip_end:TIME _ "]]"
+    {
+      return '<audio src="' + toText(uri) + '" clipBegin="' + toTime(clip_begin) + '" clipEnd="' + toTime(clip_end) + '" speed="' + toRate(speed) + '"/>'
     }
 
 Lang
@@ -427,7 +487,7 @@ LEVEL
   = "strong" / "moderate" / "none" / "reduced"
 
 TIME
-  = [0-9]+(.[0-9]+)?"h" / [0-9]+(.[0-9]+)?"min"/ [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+  = [+|-]?[0-9]+(.[0-9]+)?"s" / [+|-]?[0-9]+(.[0-9]+)?"ms"
 
 RATE
   = "x-slow" / "slow" / "medium" / "fast" / "x-fast" / "default" / NON_NEGATIVE_PERCENTAGE
@@ -436,7 +496,7 @@ PITCH
   = "x-low" / "low" / "medium" / "high" / "x-high" / "default" / PERCENTAGE / [\+\-0-9]+"Hz" / [\+\-0-9]+"st"
 
 VOLUME
-  = "silent" / "x-soft" / "soft" / "medium" / "loud" / "x-loud" / "default" / [\+\-0-9]+(.[0-9])*"dB"
+  = "silent" / "x-soft" / "soft" / "medium" / "loud" / "x-loud" / "default" / SOUND_LEVEL
 
 INTERPRET
   = "cardinal" / "number" / "ordinal" / "characters" / "digits" / "fraction" / "expletive" / "bleep" / "interjection" / "unit" / "verbatim" / "spell-out" / "date" / "time" / "telephone" / "address"
@@ -452,6 +512,12 @@ PERCENTAGE
 
 NON_NEGATIVE_PERCENTAGE
   = [0-9]+"%"
+
+COUNT
+  = [+]?[0-9]+(.[0-9]+)?
+
+SOUND_LEVEL
+  = [\+\-0-9]+(.[0-9])*"dB"
 
 VendorExtension
   = AmazonWhispered / AmazonPhonation / AmazonTimbre / AmazonDynamicRangeCompression / AmazonMaxDuration
@@ -661,7 +727,7 @@ AMAZON_DURATION
   = "x-short" / "short" / "medium" / "long" / "x-long" / "default"
 
 AMAZON_STYLE
-  = "music" / "news" / "conversational"
+  = "music" / "news" / "conversational" / "long-form"
 
 AMAZON_EMOTION
   = "excited" / "disappointed"
@@ -670,7 +736,7 @@ AMAZON_INTENSITY
   = "low" / "medium" / "high"
 
 AMAZON_MAX_DURATION
-  = [0-9]+(.[0-9]+)?"s" / [0-9]+(.[0-9]+)?"ms"
+  = [+]?[0-9]+(.[0-9]+)?"s" / [+]?[0-9]+(.[0-9]+)?"ms"
 
 GoogleMediaContainer
   = GoolgeMediaSpeak / GoolgeMediaSpeakBegin / GoolgeMediaSpeakEnd / GoolgeMediaSpeakBeginEnd / GoolgeMediaSpeakEndBegin
@@ -762,7 +828,10 @@ GoolgeMediaAudioFadeOutMediaFadeIn
     }
 
 GoogleTime
-  = _ [+|-]? _ TIME / (!"." .)+."begin" _ [+|-]? _ TIME / (!"." .)+."end" _ [+|-]? _ TIME
+  = GoogleTimeDesignation / (!"." .)+."begin" GoogleTimeDesignation / (!"." .)+."end" GoogleTimeDesignation
+
+GoogleTimeDesignation
+  = [+|-]?[0-9]+(.[0-9]+)?"h" / [+|-]?[0-9]+(.[0-9]+)?"min"/ TIME
 
 IBMExpressiveness
   = "[[" _ ("ibm-expr-type"i / "ibm-expr-typ"i / "ibmExprType"i / "iet"i) _ ":" _ expressiveness:IBM_EXPRTYPE _ "|" target:Target "]]"
