@@ -317,7 +317,14 @@ describe("Test wiki2ssml", () => {
                 { expression: "[[format:hms24,detail:1,type:time|TEXT]]", expected: helper.HEAD + "<say-as interpret-as=\"time\" format=\"hms24\" detail=\"1\">TEXT</say-as>" + helper.TAIL },
                 { expression: "[[detail:1,type:time,format:hms24|TEXT]]", expected: helper.HEAD + "<say-as interpret-as=\"time\" format=\"hms24\" detail=\"1\">TEXT</say-as>" + helper.TAIL },
                 { expression: "[[detail:1,format:hms24,type:time|TEXT]]", expected: helper.HEAD + "<say-as interpret-as=\"time\" format=\"hms24\" detail=\"1\">TEXT</say-as>" + helper.TAIL },
-                { expression: "[[detail:punctuation,format:hms24,type:time|TEXT]]", expected: helper.HEAD + "<say-as interpret-as=\"time\" format=\"hms24\" detail=\"punctuation\">TEXT</say-as>" + helper.TAIL }
+                { expression: "[[detail:punctuation,format:hms24,type:time|TEXT]]", expected: helper.HEAD + "<say-as interpret-as=\"time\" format=\"hms24\" detail=\"punctuation\">TEXT</say-as>" + helper.TAIL },
+                { expression: "[[type:letters|TEXT]]", expected: helper.HEAD + "<say-as interpret-as=\"letters\">TEXT</say-as>" + helper.TAIL },
+                { expression: "[[type:vxml:boolean|TEXT]]", expected: helper.VXML_EXTENDED_HEAD + "<say-as interpret-as=\"vxml:boolean\">TEXT</say-as>" + helper.TAIL },
+                { expression: "[[type:vxml:currency|TEXT]]", expected: helper.VXML_EXTENDED_HEAD + "<say-as interpret-as=\"vxml:currency\">TEXT</say-as>" + helper.TAIL },
+                { expression: "[[type:vxml:date|TEXT]]", expected: helper.VXML_EXTENDED_HEAD + "<say-as interpret-as=\"vxml:date\">TEXT</say-as>" + helper.TAIL },
+                { expression: "[[type:vxml:digits|TEXT]]", expected: helper.VXML_EXTENDED_HEAD + "<say-as interpret-as=\"vxml:digits\">TEXT</say-as>" + helper.TAIL },
+                { expression: "[[type:vxml:phone|TEXT]]", expected: helper.VXML_EXTENDED_HEAD + "<say-as interpret-as=\"vxml:phone\">TEXT</say-as>" + helper.TAIL },
+                { expression: "[[format:md,type:vxml:date|TEXT]]", expected: helper.VXML_EXTENDED_HEAD + "<say-as interpret-as=\"vxml:date\" format=\"md\">TEXT</say-as>" + helper.TAIL }
             ];
 
             var sad = [
