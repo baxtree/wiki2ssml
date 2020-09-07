@@ -76,6 +76,7 @@ $ yarn add wiki2ssml
 | [[voice:NAME&#124;[[mstExprType:TYPE&#124;TEXT]]]] | Voice-specific speaking style |
 | [[mstBackgroundAudio:URI,mstBackgroundAudioVolume:SCALE]] | Background audio and its volume |
 | [[mstBackgroundAudio:URI,mstBackgroundAudioFadeIn:SCALE,mstBackgroundAudioFadeOut:SCALE]] | Background audio with fade-in and fade-out |
+| [[mstExprStyle:STYLE,mstExprDegree:SCALE&#124;TEXT]] | Speaking style and its intensity |
 
 More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/). For ranges of vendor-specific values please refer to their online documents. Each attribute name in camel case can be rewritten in kebab case (e.g., firstSecondThird <=> first-second-third). Non-vendor-specific attributes can be abbreviated into their first three letters. 
 

@@ -500,7 +500,7 @@ VOLUME
 
 INTERPRET
   = "cardinal" / "number" / "ordinal" / "characters" / "digits" / "fraction" / "expletive" / "bleep" / "interjection" / "unit" / "verbatim" / "spell-out" / "date" / "time" / "telephone" / "address"
-    / "letters" / "vxml:boolean" / "vxml:currency" / "vxml:date" / "vxml:digits" /"vxml:phone"
+    / "letters" / "vxml:boolean" / "vxml:currency" / "vxml:date" / "vxml:digits" / "vxml:phone"
 
 FORMAT
   = "hms24" / "hms12" / "mdy" / "dmy" / "ymd" / "md" / "dm" / "ym" / "my" / "d" / "m" / "y"
@@ -525,8 +525,7 @@ VendorExtension
     / AmazonBreathSound / AmazonAutoBreathSound / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
     / GoogleMediaContainer
     / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
-    / MicrosoftSpeakingStyleDegree / MicrosoftSpeakingDegreeStyle
-    / MicrosoftSpeakingStyle
+    / MicrosoftSpeakingStyleDegree / MicrosoftSpeakingDegreeStyle / MicrosoftSpeakingStyle
     / MicrosoftBackground
 
 AmazonWhispered
@@ -1002,7 +1001,7 @@ MicrosoftSpeakingStyleDegree
     }
 
 MicrosoftSpeakingDegreeStyle
-  = "[[" _ ("mst-expr-degree"i / "mst-exp-deg"i / "MstExprDegree"i / "med"i) _ ":" _ degree:MICROSOFT_STYLE_DEGREE + "," _ ("mst-expr-style"i / "mst-exp-sty"i / "mstExprStyle"i / "met"i) _ ":" expressiveness:(!"|" .)+ _  "|" target:Target "]]"
+  = "[[" _ ("mst-expr-degree"i / "mst-exp-deg"i / "mstExprDegree"i / "med"i) _ ":" _ degree:MICROSOFT_STYLE_DEGREE + "," _ ("mst-expr-style"i / "mst-exp-sty"i / "mstExprStyle"i / "met"i) _ ":" expressiveness:(!"|" .)+ _  "|" target:Target "]]"
     {
       return '<mstts:express-as style="' + toText(expressiveness) + '" styledegree="' + toFlattened(degree) + '">' + target + '</mstts:express-as>';
     }
