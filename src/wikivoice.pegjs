@@ -500,6 +500,7 @@ VOLUME
 
 INTERPRET
   = "cardinal" / "number" / "ordinal" / "characters" / "digits" / "fraction" / "expletive" / "bleep" / "interjection" / "unit" / "verbatim" / "spell-out" / "date" / "time" / "telephone" / "address"
+    / "letters" / "vxml:boolean" / "vxml:currency" / "vxml:date" / "vxml:digits" /"vxml:phone"
 
 FORMAT
   = "hms24" / "hms12" / "mdy" / "dmy" / "ymd" / "md" / "dm" / "ym" / "my" / "d" / "m" / "y"
@@ -524,7 +525,9 @@ VendorExtension
     / AmazonBreathSound / AmazonAutoBreathSound / AmazonSpeakingStyle / AmazonEmotionIntensity / AmazonIntensityEmotion
     / GoogleMediaContainer
     / IBMExpressiveness / IBMVoiceTransformation / IBMVoiceCustomTransformation
-    / MicrosoftSpeakingStyle / MicrosoftBackground
+    / MicrosoftSpeakingStyleDegree / MicrosoftSpeakingDegreeStyle
+    / MicrosoftSpeakingStyle
+    / MicrosoftBackground
 
 AmazonWhispered
   = "[[" _ ("amz-whispered"i / "amz-whi"i / "amzWhispered"i / "aws"i) _ "|" target:Target "]]"
@@ -987,9 +990,21 @@ MicrosoftBackground
     / MicrosoftBackgroundFadeOutAudioFadeIn / MicrosoftBackgroundFadeOutFadeInAudio
 
 MicrosoftSpeakingStyle
-  = "[[" _ ("mst-expr-type"i / "mst-exp-typ"i / "mstExprType"i / "met"i) _ ":" _ expressiveness:(!"|" .)+ _ "|" target:Target "]]"
+  = "[[" _ ("mst-expr-style"i / "mst-exp-sty"i / "mstExprStyle"i / "met"i) _ ":" _ expressiveness:(!"|" .)+ _ "|" target:Target "]]"
     {
-      return '<mstts:express-as type="' + toText(expressiveness) + '">' + target + '</mstts:express-as>';
+      return '<mstts:express-as style="' + toText(expressiveness) + '">' + target + '</mstts:express-as>';
+    }
+
+MicrosoftSpeakingStyleDegree
+  = "[[" _ ("mst-expr-style"i / "mst-exp-sty"i / "mstExprStyle"i / "met"i) _ ":" expressiveness:(!"," .)+ _ "," _ ("mst-expr-degree"i / "mst-exp-deg"i / "MstExprDegree"i / "med"i) _ ":" _ degree:MICROSOFT_STYLE_DEGREE _ "|" target:Target "]]"
+    {
+      return '<mstts:express-as style="' + toText(expressiveness) + '" styledegree="' + toFlattened(degree) + '">' + target + '</mstts:express-as>';
+    }
+
+MicrosoftSpeakingDegreeStyle
+  = "[[" _ ("mst-expr-degree"i / "mst-exp-deg"i / "MstExprDegree"i / "med"i) _ ":" _ degree:MICROSOFT_STYLE_DEGREE + "," _ ("mst-expr-style"i / "mst-exp-sty"i / "mstExprStyle"i / "met"i) _ ":" expressiveness:(!"|" .)+ _  "|" target:Target "]]"
+    {
+      return '<mstts:express-as style="' + toText(expressiveness) + '" styledegree="' + toFlattened(degree) + '">' + target + '</mstts:express-as>';
     }
 
 MicrosoftBackgroundAudio
@@ -1075,3 +1090,6 @@ MICROSOFT_VOLUME
 
 MICROSOFT_FADE_DURATION
   = [1][0][0][0][0] / [1-9][0-9][0-9][0-9] / [1-9][0-9][0-9] / [1-9][0-9] / [0-9]
+
+MICROSOFT_STYLE_DEGREE
+  = [+]?[0-9]+(.[0-9]+)?

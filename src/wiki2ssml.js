@@ -5,7 +5,8 @@ var fs = require("fs");
 var prettifyXml = require("prettify-xml");
 
 const _EXTNS = {
-    "mstts": "http://www.w3.org/2001/mstts"
+    "mstts": "http://www.w3.org/2001/mstts",
+    "vxml": "http://www.w3.org/2001/vxml"
 };
 
 module.exports = (() => {
@@ -33,7 +34,7 @@ module.exports = (() => {
     var _getSsmlAsString = (ssmlBody, language, options) => {
         var ext_ns = "";
         for (var namespace in _EXTNS) {
-            if (ssmlBody.indexOf("<" + namespace + ":") > -1) {
+            if (ssmlBody.indexOf(namespace + ":") > -1) {
                 ext_ns += "xmlns:" + namespace + "=\"" + _EXTNS[namespace] + "\" ";
             }
         }

@@ -11,12 +11,19 @@ module.exports = (() => {
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
         "xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" " +
         "xml:lang=\"en-GB\">";
-    const _EXTENDED_HEAD = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    const _MSTTS_EXTENDED_HEAD = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<!DOCTYPE speak PUBLIC \"-//W3C//DTD SYNTHESIS 1.0//EN\" \"http://www.w3.org/TR/speech-synthesis/synthesis.dtd\">" +
         "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
         "xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" " +
         "xmlns:mstts=\"http://www.w3.org/2001/mstts\" " +
+        "xml:lang=\"en-GB\">";
+    const _VXML_EXTENDED_HEAD = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<!DOCTYPE speak PUBLIC \"-//W3C//DTD SYNTHESIS 1.0//EN\" \"http://www.w3.org/TR/speech-synthesis/synthesis.dtd\">" +
+        "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+        "xsi:schemaLocation=\"http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd\" " +
+        "xmlns:vxml=\"http://www.w3.org/2001/vxml\" " +
         "xml:lang=\"en-GB\">";
     const _TAIL = "</speak>";
 
@@ -47,7 +54,8 @@ module.exports = (() => {
 
     return {
         HEAD: _HEAD,
-        EXTENDED_HEAD: _EXTENDED_HEAD,
+        MSTTS_EXTENDED_HEAD: _MSTTS_EXTENDED_HEAD,
+        VXML_EXTENDED_HEAD: _VXML_EXTENDED_HEAD,
         TAIL: _TAIL,
         runHappyTests: _runHappyTests,
         runSadTests: _runSadTests
