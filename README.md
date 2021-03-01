@@ -5,9 +5,6 @@
 
 `wiki2ssml` can transform the `WikiVoice` markups into the W3C SSML widely supported by various text-to-speech services as an interchange format for synthesised voice tuning.
 
-# Introduction
-`wiki2ssml` eases the burden of editors preparing scripts later used for speech synthesis. It is powered by `WikiVoice` which provides an unobtrusive solution of blending voice-tuning markups and free texts and a seamless experience of editing scripts and voices in one go. 
-
 # Install
 ```sh
 $ npm install wiki2ssml
@@ -16,6 +13,9 @@ or
 ```sh
 $ yarn add wiki2ssml
 ```
+
+# Introduction
+`wiki2ssml` eases the burden of editors preparing scripts in SSML, widely understood by modern speech synthesisers including but not limited to Amazon Polly, Google TTS, IBM Watson TTS and Microsoft Azure TTS. It has been developed in Vanilla JavaScript and powered by `WikiVoice` which provides an unobtrusive solution of blending voice-tuning markups with free texts and creates seamless experiences of editing scripts and voices in one go.
 #
 <p align="center">
 <img src="./figures/wikivoice.png" alt="WikiVoice"/>
@@ -105,7 +105,7 @@ try {
     }
 }
 ```
-will output:
+will print out:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <speak version="1.1" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/10/synthesis http://www.w3.org/TR/speech-synthesis/synthesis.xsd" xml:lang="en-GB">

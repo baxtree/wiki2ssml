@@ -244,14 +244,14 @@ cliui@^5.0.0:
     strip-ansi "^5.2.0"
     wrap-ansi "^5.1.0"
 
-codecov@^3.6.5:
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/codecov/-/codecov-3.6.5.tgz#d73ce62e8a021f5249f54b073e6f2d6a513f172a"
-  integrity sha512-v48WuDMUug6JXwmmfsMzhCHRnhUf8O3duqXvltaYJKrO1OekZWpB/eH6iIoaxMl8Qli0+u3OxptdsBOYiD7VAQ==
+codecov@^3.7.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/codecov/-/codecov-3.8.1.tgz#06fe026b75525ed1ce864d4a34f1010c52c51546"
+  integrity sha512-Qm7ltx1pzLPsliZY81jyaQ80dcNR4/JpcX0IHCIWrHBXgseySqbdbYfkdiXd7o/xmzQpGRVCKGYeTrHUpn6Dcw==
   dependencies:
     argv "0.0.2"
     ignore-walk "3.0.3"
-    js-yaml "3.13.1"
+    js-yaml "3.14.0"
     teeny-request "6.0.1"
     urlgrey "0.4.4"
 
@@ -872,6 +872,14 @@ js-yaml@3.13.1, js-yaml@3.x, js-yaml@^3.13.0:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+js-yaml@3.14.0:
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.14.0.tgz#a7a34170f26a21bb162424d8adacb4113a69e482"
+  integrity sha512-/4IbIeHcD9VMHFqDR/gQ7EdZdLimOvW2DdcxFjdyyZ9NsbS+ccrXqVWDtab/lRl5AlUqmpBx8EhPaWR+OtY17A==
+  dependencies:
+    argparse "^1.0.7"
+    esprima "^4.0.0"
+
 json-schema-traverse@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz#69f6a87d9513ab8bb8fe63bdb0979c448e684660"
@@ -1003,9 +1011,9 @@ node-environment-flags@1.0.6:
     semver "^5.7.0"
 
 node-fetch@^2.2.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
-  integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 nopt@3.x:
   version "3.0.6"
