@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/baxtree/wiki2ssml.svg?branch=master)](https://travis-ci.com/baxtree/wiki2ssml) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml) ![Node](https://img.shields.io/static/v1?label=node.js&message=&#8805;6.4.0&color=green) [![GitHub license](https://img.shields.io/github/license/baxtree/wiki2ssml)](https://github.com/baxtree/wiki2ssml/blob/master/LICENSE)
+[![Build Status](https://github.com/baxtree/wiki2ssml/actions/workflows/ci-pipeline.yml/badge.svg?branch=master)](https://github.com/baxtree/wiki2ssml/actions/workflows/ci-pipeline.yml?query=branch%3Amaster) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml) ![Node](https://img.shields.io/static/v1?label=node.js&message=&#8805;6.4.0&color=green) [![GitHub license](https://img.shields.io/github/license/baxtree/wiki2ssml)](https://github.com/baxtree/wiki2ssml/blob/master/LICENSE)
 
 
 # Wiki2SSML
@@ -9,7 +9,7 @@
 ```sh
 $ npm install wiki2ssml
 ```
-or 
+or
 ```sh
 $ yarn add wiki2ssml
 ```
@@ -78,7 +78,7 @@ $ yarn add wiki2ssml
 | [[mstBackgroundAudio:URI,mstBackgroundAudioFadeIn:SCALE,mstBackgroundAudioFadeOut:SCALE]] | Background audio with fade-in and fade-out |
 | [[mstExprStyle:STYLE,mstExprDegree:SCALE&#124;TEXT]] | Speaking style and its intensity |
 
-More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/). For ranges of vendor-specific values please refer to their online documents. Each attribute name in camel case can be rewritten in kebab case (e.g., firstSecondThird <=> first-second-third). Non-vendor-specific attributes can be abbreviated into their first three letters. 
+More details on canonical attribute values can be found at [Speech Synthesis Markup Language (SSML)](https://www.w3.org/TR/speech-synthesis/). For ranges of vendor-specific values please refer to their online documents. Each attribute name in camel case can be rewritten in kebab case (e.g., firstSecondThird <=> first-second-third). Non-vendor-specific attributes can be abbreviated into their first three letters.
 
 # parseToSsml(input, languageCode, options)
 - input `<string>` (required)
