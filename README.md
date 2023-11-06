@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/baxtree/wiki2ssml/actions/workflows/ci-pipeline.yml/badge.svg?branch=master)](https://github.com/baxtree/wiki2ssml/actions/workflows/ci-pipeline.yml?query=branch%3Amaster) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml) ![Node](https://img.shields.io/static/v1?label=node.js&message=&#8805;6.4.0&color=green) [![GitHub license](https://img.shields.io/github/license/baxtree/wiki2ssml)](https://github.com/baxtree/wiki2ssml/blob/master/LICENSE)
+[![Build Status](https://github.com/baxtree/wiki2ssml/actions/workflows/ci-pipeline.yml/badge.svg?branch=master)](https://github.com/baxtree/wiki2ssml/actions/workflows/ci-pipeline.yml?query=branch%3Amaster) ![Codecov](https://img.shields.io/codecov/c/github/baxtree/wiki2ssml) ![Node](https://img.shields.io/static/v1?label=node.js&message=&#8805;16.0.0&color=green) [![GitHub license](https://img.shields.io/github/license/baxtree/wiki2ssml)](https://github.com/baxtree/wiki2ssml/blob/master/LICENSE)
 
 
 # Wiki2SSML

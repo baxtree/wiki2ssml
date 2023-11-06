@@ -1,6 +1,6 @@
 "use strict";
 
-var peg = require("pegjs");
+var peggy = require("peggy");
 var fs = require("fs");
 var prettifyXml = require("prettify-xml");
 
@@ -11,7 +11,7 @@ const _EXTNS = {
 
 module.exports = (() => {
     try {
-        var _parser = peg.generate(fs.readFileSync(__dirname + "/wikivoice.pegjs").toString());
+        var _parser = peggy.generate(fs.readFileSync(__dirname + "/wikivoice.pegjs").toString());
     }
     catch (e) {
         throw new SyntaxError(e.message);
@@ -100,7 +100,7 @@ module.exports = (() => {
 
         reloadGrammar: (grammar) => {
             try {
-                _parser = peg.generate(grammar);
+                _parser = peggy.generate(grammar);
             }
             catch (e) {
                 throw new SyntaxError(e.message);

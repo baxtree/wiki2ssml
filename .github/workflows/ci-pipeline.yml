@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x, 19.x]
+        node-version: [16.x, 18.x, 20.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -28,6 +28,8 @@ jobs:
       - name: Unit tests
         run: npm run test
       - name: Coverage
-        run: |
-          npm run coverage
-          # npm run codecov
+        run: npm run coverage
+      - name: Codecov upload
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
